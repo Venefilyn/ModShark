@@ -14,26 +14,77 @@
         <span class="mr-2">Latest Release</span>
       </v-btn>
     </v-toolbar>
-    <ms-submission></ms-submission>
+    <v-content>{{ me }}</v-content>
+    <!--<ms-submission></ms-submission>-->
   </v-app>
 </template>
 
 <script>
 import Submission from "./components/Submission";
 import LocalAuthentication from "./models/LocalAuthentication";
+import Snoowrap from "snoowrap";
 
 export default {
   name: 'App',
   components: {
     "ms-submission": Submission
   },
+  data() {
+    return {
+      me: null
+    }
+  },
+  computed: {
+    reddit() {
+      return this.$store.state.reddit;
+    }
+  },
+  methods: {
+    getMe() {
+      if (this.reddit) {
+        this.reddit.getPreferences().then(console.log);
+        this.reddit.getMe().then(me => {
+          console.log(me, typeof me);
+          this.me = me.name;
+        });
+      }
+    }
+  },
   mounted() {
     let token = new LocalAuthentication(this).getAccessToken();
-    console.log("token", token, token.length);
     if (token.length) {
       // we have a token
+      this.$store.dispatch("updateAccessToken", token);
+      this.$store.dispatch("createRedditInstance");
+      this.getMe()
     }
-    // we do not have a token
+    else {
+      // we do not have a token
+      let code = new URL(window.location.href).searchParams.get('code');
+
+      if (code) {
+        Snoowrap.fromAuthCode({
+          code: code,
+          userAgent: this.$store.state.userAgent,
+          clientId: 'TL5jne9mkFesLQ',
+          redirectUri: this.$store.state.redirectUrl
+        }).then(r => {
+          this.$store.dispatch("updateAccessToken", r.accessToken);
+          this.$store.dispatch("updateReddit", r);
+          this.getMe()
+        })
+      }
+      else {
+        let redirectUri = this.$store.state.redirectUrl;
+        window.location.href = Snoowrap.getAuthUrl({
+          clientId: "TL5jne9mkFesLQ",
+          scope: ["identity"],
+          redirectUri: redirectUri,
+          permanent: false,
+          state: "123"
+        })
+      }
+    }
   }
 }
 </script>
