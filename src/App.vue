@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app >
     <v-toolbar app>
       <v-toolbar-title class="headline text-uppercase">
         <span>Vuetify</span>
@@ -14,25 +14,26 @@
         <span class="mr-2">Latest Release</span>
       </v-btn>
     </v-toolbar>
-
-    <v-content>
-      <HelloWorld/>
-    </v-content>
+    <ms-submission></ms-submission>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
+import Submission from "./components/Submission";
+import LocalAuthentication from "./models/LocalAuthentication";
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    "ms-submission": Submission
   },
-  data () {
-    return {
-      //
+  mounted() {
+    let token = new LocalAuthentication(this).getAccessToken();
+    console.log("token", token, token.length);
+    if (token.length) {
+      // we have a token
     }
+    // we do not have a token
   }
 }
 </script>
