@@ -76,6 +76,7 @@ export default {
       }
       else {
         let redirectUri = this.$store.state.redirectUrl;
+        return;
         window.location.href = Snoowrap.getAuthUrl({
           clientId: "TL5jne9mkFesLQ",
           scope: ["identity"],
