@@ -5,4 +5,4 @@ module.exports = {
         // aspnet uses the other hmr so remove this one
         config.plugins.delete('hmr');
     }
-}
+};

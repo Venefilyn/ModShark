@@ -11,10 +11,10 @@ namespace ModShark.Controllers
             return File("~/index.html", "text/html");
         } 
         
-        public IActionResult Error()
+        /*public IActionResult Error()
         {
             ViewData["RequestId"] = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
             return View();
-        }
+        }*/
     }
 }
