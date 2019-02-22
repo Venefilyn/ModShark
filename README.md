@@ -1,39 +1,22 @@
-# mod-shark
+# ModShark
 
-## Project setup
-```
-npm install
-```
+Moderating on-the-go has always been a pain. ModShark's goal is to make this easier than it currently is.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Installation
 
-### Compiles and minifies for production
-```
-npm run build
-```
+Tooling:
+1. Install the [latest .NET Core SDK](https://dotnet.microsoft.com/download)
+1. Install [NodeJS](https://nodejs.org/en/download/) (LTS preferred)
+1. `dotnet tool install dev-certs`
 
-### Run your tests
-```
-npm run test
-```
+Project:
+1. `npm install`
+1. `dotnet dev-certs https`
+1. `dotnet run`
 
-### Lints and fixes files
-```
-npm run lint
-```
 
-### Run your end-to-end tests
-```
-npm run test:e2e
-```
+## Testing
 
-### Run your unit tests
-```
-npm run test:unit
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Front-end
+* `npm run test:unit` 
+* `npm run test:e2e`
