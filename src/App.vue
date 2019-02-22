@@ -23,6 +23,7 @@
 import Submission from "./components/Submission";
 import LocalAuthentication from "./models/LocalAuthentication";
 import Snoowrap from "snoowrap";
+import axios from "axios";
 
 export default {
   name: 'App',
@@ -51,6 +52,7 @@ export default {
     }
   },
   mounted() {
+    axios.get("/api/settings").then(response => console.log(response.data));
     let token = new LocalAuthentication(this).getAccessToken();
     if (token.length) {
       // we have a token
