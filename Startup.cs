@@ -51,14 +51,15 @@ namespace ModShark
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-
+            
+            // Map every route except `/api` to HomeController@index
             app.MapWhen(x => !x.Request.Path.Value.StartsWith("/api"), builder =>
             {
                 builder.UseMvc(routes =>
