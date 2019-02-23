@@ -15,7 +15,11 @@
       </v-btn>
     </v-toolbar>
     <v-content>{{ me }}</v-content>
-    <!--<ms-submission></ms-submission>-->
+    <v-layout row wrap>
+      <ms-submission :reddit-submission="{}"></ms-submission>
+      <ms-submission :reddit-submission="{}"></ms-submission>
+      <ms-submission :reddit-submission="{}"></ms-submission>
+    </v-layout>
   </v-app>
 </template>
 
