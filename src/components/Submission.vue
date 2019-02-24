@@ -1,8 +1,8 @@
 <template>
     <v-flex xs12>
-        <v-card class="mt-1 mb-1">
+        <v-card>
             <v-layout class="pl-2 pr-2">
-                <v-flex xs3>
+                <v-flex xs3 sm2 lg1>
                     <v-img
                             src="https://cdn.vuetifyjs.com/images/cards/foster.jpg"
                             height="125px"
@@ -15,16 +15,6 @@
                             <div>Submission</div>
                         </div>
                     </v-card-title>
-                </v-flex>
-                <v-flex xs3>
-                    <v-item-group class="pa-3">
-                        <v-btn flat icon small>
-                            <v-icon small>arrow_upward</v-icon>
-                        </v-btn>
-                        <v-btn flat icon small>
-                            <v-icon small>arrow_downward</v-icon>
-                        </v-btn>
-                    </v-item-group>
                 </v-flex>
             </v-layout>
             <v-divider light></v-divider>

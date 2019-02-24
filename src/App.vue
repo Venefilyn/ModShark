@@ -1,7 +1,8 @@
 <template>
   <v-app >
-    <v-toolbar app>
+    <v-toolbar app >
       <v-toolbar-side-icon
+              v-show="$vuetify.breakpoint.mdAndDown"
               @click.stop="drawer = !drawer"
       ></v-toolbar-side-icon>
       <v-toolbar-title>
@@ -12,98 +13,56 @@
         flat
         icon
         @click.stop="drawerSettings = !drawerSettings"
+        v-show="$vuetify.breakpoint.lgAndDown"
       >
         <v-icon>settings</v-icon>
       </v-btn>
     </v-toolbar>
-    <v-navigation-drawer
-            v-model="drawer"
-            fixed 
-            temporary>
-      <v-toolbar flat>
-        Subreddits
-      </v-toolbar>
-
-      <v-divider></v-divider>
-      
-      <v-list>
-        <v-list-tile
-        >
-          <v-list-tile-content>
-            <v-list-tile-title>r/ExampleSubreddit</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile
-        >
-          <v-list-tile-content>
-            <v-list-tile-title>r/ExampleSubreddit</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
-    <v-navigation-drawer
-          v-model="drawerSettings"
-          fixed
-          right
-          temporary>
-      <v-toolbar flat extended>
-        ModShark icon, username, logout icon button
-      </v-toolbar>
-  
-      <v-divider></v-divider>
-  
-      <v-list>
-        <v-list-tile
-        >
-          <v-list-tile-avatar>
-            <v-icon>settings</v-icon>
-          </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-list-tile-title>Settings</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile
-        >
-          <v-list-tile-avatar>
-            <v-icon>info</v-icon>
-          </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-list-tile-title>About</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
+    <ms-subreddits-drawer v-model="drawer"/>
+    <ms-settings-drawer v-model="drawerSettings"/>
     <v-content>
       {{ me }}
       <!--Router view here-->
-      <v-layout align-content-start row wrap>
-        <ms-submission :reddit-submission="{}"></ms-submission>
-        <ms-submission :reddit-submission="{}"></ms-submission>
-        <ms-submission :reddit-submission="{}"></ms-submission>
-      </v-layout>
+      <ms-no-content v-show="false"></ms-no-content>
+      <v-container
+              fill-height
+              flex
+              grid-list-lg align-content-start >
+        <v-layout row wrap>
+          <ms-submission :reddit-submission="{}"></ms-submission>
+          <ms-submission :reddit-submission="{}"></ms-submission>
+          <ms-submission :reddit-submission="{}"></ms-submission>
+        </v-layout>
+      </v-container>
     </v-content>
     <ms-navigation-footer/>
   </v-app>
 </template>
 
 <script>
-  import Submission from "./components/Submission";
-  import NavigationFooter from "./components/NavigationFooter";
+  import MsSubmission from "./components/Submission";
   import LocalAuthentication from "./models/LocalAuthentication";
   import Snoowrap from "snoowrap";
   import axios from "axios";
+  import MsSubredditsDrawer from "./views/partials/SubredditsDrawer";
+  import MsSettingsDrawer from "./views/partials/SettingsDrawer";
+  import MsNavigationFooter from "./views/partials/NavigationFooter";
+  import MsNoContent from "./views/partials/NoContent";
 
   export default {
   name: 'App',
   components: {
-    "ms-navigation-footer": NavigationFooter,
-    "ms-submission": Submission
+    MsNavigationFooter,
+    MsSubredditsDrawer,
+    MsSettingsDrawer,
+    MsNoContent,
+    MsSubmission,
   },
   data() {
     return {
       me: null,
-      drawer: false,
-      drawerSettings: false,
+      drawer: null,
+      drawerSettings: null,
     }
   },
   computed: {
