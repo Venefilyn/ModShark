@@ -1,0 +1,42 @@
+<template>
+    <v-bottom-nav
+            app
+            fixed
+            :value="true"
+    >
+        <v-btn
+                flat
+                value="modqueue"
+        >
+            <span>Modqueue</span>
+            <v-icon>assignment</v-icon>
+        </v-btn>
+        <v-btn
+                flat
+                value="unmoderated"
+        >
+            <span>Unmoderated</span>
+            <v-icon>list</v-icon>
+        </v-btn>
+        <v-btn
+                flat
+                value="modmail"
+        >
+            <span>Modmail</span>
+            <v-icon>mail</v-icon>
+        </v-btn>
+        <v-btn
+                flat
+                value="more"
+        >
+            <span>More</span>
+            <v-icon>more_vert</v-icon>
+        </v-btn>
+    </v-bottom-nav>
+</template>
+
+<script>
+    export default {
+        name: 'ms-navigation-footer'
+    }
+</script>

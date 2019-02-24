@@ -1,6 +1,6 @@
 <template>
     <v-flex xs12>
-        <v-card class="mb-2">
+        <v-card class="mt-1 mb-1">
             <v-layout class="pl-2 pr-2">
                 <v-flex xs3>
                     <v-img
@@ -47,7 +47,7 @@
     import {objects} from "snoowrap";
 
     export default {
-        name: "Submission",
+        name: "ms-submission",
         props: {
             redditSubmission: {
                 type: Object,
