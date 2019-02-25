@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
+import CenteredText from "./views/CenteredText";
 
 Vue.use(Router);
 
@@ -11,8 +12,10 @@ let router = new Router({
     {
       path: '*',
       name: 'any',
-      // Change to NotFoundComponent
-      component: import(/* webpackChunkName: "about" */ './views/About.vue')
+      component: CenteredText,
+      props: {
+        text: "Could not find anything!"
+      }
     },
     {
       path: '/',

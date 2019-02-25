@@ -1,37 +1,22 @@
 <template>
-  <v-app >
+  <v-app dark>
     <ms-main-toolbar />
     <ms-subreddits-drawer />
     <ms-settings-drawer />
     <v-content>
-      {{ me }}
-      <!--Router view here-->
       <router-view></router-view>
-      <ms-no-content v-show="false"></ms-no-content>
-      <v-container
-              fill-height
-              flex
-              grid-list-lg align-content-start >
-        <v-layout row wrap>
-          <ms-submission :reddit-submission="{}"></ms-submission>
-          <ms-submission :reddit-submission="{}"></ms-submission>
-          <ms-submission :reddit-submission="{}"></ms-submission>
-        </v-layout>
-      </v-container>
     </v-content>
     <ms-navigation-footer/>
   </v-app>
 </template>
 
 <script>
-  import MsSubmission from "./components/Submission";
   import LocalAuthentication from "./models/LocalAuthentication";
   import Snoowrap from "snoowrap";
   import axios from "axios";
   import MsSubredditsDrawer from "./views/partials/SubredditsDrawer";
   import MsSettingsDrawer from "./views/partials/SettingsDrawer";
   import MsNavigationFooter from "./views/partials/NavigationFooter";
-  import MsNoContent from "./views/partials/NoContent";
   import MsMainToolbar from "./views/partials/MainToolbar";
 
   export default {
@@ -41,8 +26,6 @@
     MsNavigationFooter,
     MsSubredditsDrawer,
     MsSettingsDrawer,
-    MsNoContent,
-    MsSubmission,
   },
   data() {
     return {
