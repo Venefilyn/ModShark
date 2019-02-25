@@ -1,25 +1,8 @@
 <template>
   <v-app >
-    <v-toolbar app >
-      <v-toolbar-side-icon
-              v-show="$vuetify.breakpoint.mdAndDown"
-              @click.stop="drawer = !drawer"
-      ></v-toolbar-side-icon>
-      <v-toolbar-title>
-        r/subreddit
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn
-        flat
-        icon
-        @click.stop="drawerSettings = !drawerSettings"
-        v-show="$vuetify.breakpoint.lgAndDown"
-      >
-        <v-icon>settings</v-icon>
-      </v-btn>
-    </v-toolbar>
-    <ms-subreddits-drawer v-model="drawer"/>
-    <ms-settings-drawer v-model="drawerSettings"/>
+    <ms-main-toolbar />
+    <ms-subreddits-drawer />
+    <ms-settings-drawer />
     <v-content>
       {{ me }}
       <!--Router view here-->
@@ -48,10 +31,12 @@
   import MsSettingsDrawer from "./views/partials/SettingsDrawer";
   import MsNavigationFooter from "./views/partials/NavigationFooter";
   import MsNoContent from "./views/partials/NoContent";
+  import MsMainToolbar from "./views/partials/MainToolbar";
 
   export default {
   name: 'App',
   components: {
+    MsMainToolbar,
     MsNavigationFooter,
     MsSubredditsDrawer,
     MsSettingsDrawer,
@@ -61,8 +46,6 @@
   data() {
     return {
       me: null,
-      drawer: null,
-      drawerSettings: null,
     }
   },
   computed: {

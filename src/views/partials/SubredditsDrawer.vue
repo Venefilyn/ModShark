@@ -1,7 +1,6 @@
 <template>
     <v-navigation-drawer
-            :value="value"
-            @input="$emit('input', $event)"
+            v-model="drawer"
             fixed
             app>
         <v-toolbar flat>
@@ -31,13 +30,23 @@
 </template>
 
 <script>
+    import {mapActions, mapState} from "vuex";
+
     export default {
         name: 'ms-subreddits-drawer',
-        props: {
-            value: {
-                type: Boolean,
-                default: false
-            },
+        computed: {
+            ...mapState(["drawerSubreddits"]),
+            drawer: {
+                get() {
+                    return this.drawerSubreddits;
+                },
+                set(value) {
+                    this.updateSubredditsDrawer(value)
+                }
+            }
+        },
+        methods: {
+            ...mapActions(["updateSubredditsDrawer"])
         },
     }
 </script>

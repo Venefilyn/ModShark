@@ -1,7 +1,6 @@
 <template>
     <v-navigation-drawer
-            :value="value"
-            @input="$emit('input', $event)"
+            v-model="drawer"
             fixed
             app
             :mobile-break-point="this.$vuetify.breakpoint.thresholds.lg"
@@ -38,13 +37,23 @@
 </template>
 
 <script>
+    import {mapActions, mapState} from "vuex";
+
     export default {
         name: 'ms-settings-drawer',
-        props: {
-            value: {
-                type: Boolean,
-                default: null
-            },
+        computed: {
+            ...mapState(["drawerSettings"]),
+            drawer: {
+                get() {
+                    return this.drawerSettings;
+                },
+                set(value) {
+                    this.updateSettingsDrawer(value)
+                }
+            }
+        },
+        methods: {
+            ...mapActions(["updateSettingsDrawer"])
         },
     }
 </script>

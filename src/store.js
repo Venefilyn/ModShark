@@ -11,8 +11,12 @@ export default new Vuex.Store({
     accessToken: "",
     /** @member {Snoowrap|null} */
     reddit: null,
+    // TODO: Move out to .env
     redirectUrl: "http://127.0.0.1:8080/#/",
-    userAgent: "ModShark v0.1 by u/SpyTec13"
+    // TODO: Move out to .env & match versioning to package.json
+    userAgent: "ModShark v0.1 by u/SpyTec13",
+    drawerSubreddits: null,
+    drawerSettings: null,
   },
   mutations: {
     CREATE_REDDIT(state) {
@@ -26,7 +30,13 @@ export default new Vuex.Store({
     },
     UPDATE_REDDIT(state, reddit) {
       state.reddit = reddit;
-    }
+    },
+    UPDATE_SUBREDDITS_DRAWER(state, value) {
+      state.drawerSubreddits = value;
+    },
+    UPDATE_SETTINGS_DRAWER(state, value) {
+      state.drawerSettings = value;
+    },
   },
   actions: {
     createRedditInstance({ commit }) {
@@ -37,7 +47,13 @@ export default new Vuex.Store({
     },
     updateReddit({ commit }, reddit) {
       commit("UPDATE_REDDIT", reddit);
-    }
+    },
+    updateSubredditsDrawer({ commit }, value) {
+      commit("UPDATE_SUBREDDITS_DRAWER", value);
+    },
+    updateSettingsDrawer({ commit }, value) {
+      commit("UPDATE_SETTINGS_DRAWER", value);
+    },
   },
   plugins: [
     vuejsStorage({
