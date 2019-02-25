@@ -6,6 +6,7 @@
     <v-content>
       {{ me }}
       <!--Router view here-->
+      <router-view></router-view>
       <ms-no-content v-show="false"></ms-no-content>
       <v-container
               fill-height
