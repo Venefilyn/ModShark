@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace ModShark.Models
 {
@@ -15,9 +15,16 @@ namespace ModShark.Models
         public string Username
         {
             get => _hashedUsername;
-            set => _hashedUsername = value + "abc";
+            set => _hashedUsername = HashUsername(value);
         }
 
         public List<UserSetting> UserSettings { get; set; }
+
+        public static string HashUsername(string value)
+        {
+            SHA512 shaM = new SHA512Managed();
+            byte[] result = shaM.ComputeHash(Encoding.ASCII.GetBytes(value));
+            return Encoding.ASCII.GetString(result);
+        }
     }
 }

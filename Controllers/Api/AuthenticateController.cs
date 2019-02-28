@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ModShark.Models;
 using Reddit;
 
 namespace ModShark.Controllers.Api
@@ -16,6 +17,13 @@ namespace ModShark.Controllers.Api
     [ApiController]
     public class AuthenticateController : ControllerBase
     {
+        private readonly ModSharkContext _context;
+
+        public AuthenticateController(ModSharkContext context)
+        {
+            _context = context;
+        }
+
         // GET api/authenticate
         [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<Dictionary<string, string>>>> Get()
@@ -40,10 +48,11 @@ namespace ModShark.Controllers.Api
         [HttpPost]
         public async Task<ActionResult<string>> Post([FromBody] string token)
         {
+            string username;
             try
             {
                 RedditAPI reddit = new RedditAPI("id", token);
-                string username = reddit.Account.Me.Name;
+                username = reddit.Account.Me.Name;
             }
             catch (Exception e)
             {
@@ -52,19 +61,34 @@ namespace ModShark.Controllers.Api
             }
             
             // No exceptions, token is valid and we have username
-            // insert into database and store the primary key 
-            
+            // insert into database and store the primary key
+            RedditUser user;
+            try
+            {
+                string hashedUsername = RedditUser.HashUsername(username);
+                user = _context.RedditUsers.Single(u => u.Username == hashedUsername);
+            }
+            catch (InvalidOperationException e)
+            {
+                user = new RedditUser()
+                {
+                    Username = username
+                };
+                _context.Add(user);
+                _context.SaveChanges();
+            }
             // retrieve username using Reddit.NET and variables from .env
             // if successful, store hashed token and hashed username in tables
             // call AuthenticateUser(username, token)
-            return "";
+            await AuthenticateUser(user.Id, token);
+            return Ok(new Dictionary<string, string>{{ "token", token }});
         }
 
-        private async Task AuthenticateUser(string username, string token)
+        private async Task AuthenticateUser(int userId, string token)
         {
             var claims = new List<Claim>
             {
-                new Claim("user_id", username),
+                new Claim("userId", userId.ToString()),
                 new Claim("token", token),
             };
 

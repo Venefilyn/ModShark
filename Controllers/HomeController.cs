@@ -7,13 +7,6 @@ namespace ModShark.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ModSharkContext _context;
-
-        public HomeController(ModSharkContext context)
-        {
-            _context = context;
-        }
-
         public IActionResult Index()
         {
             return File("~/index.html", "text/html");
