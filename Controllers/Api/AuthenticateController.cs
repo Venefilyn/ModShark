@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Reddit;
 
 namespace ModShark.Controllers.Api
 {
@@ -39,8 +40,22 @@ namespace ModShark.Controllers.Api
         [HttpPost]
         public async Task<ActionResult<string>> Post([FromBody] string token)
         {
+            try
+            {
+                RedditAPI reddit = new RedditAPI("id", token);
+                string username = reddit.Account.Me.Name;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return Unauthorized(e.Message);
+            }
+            
+            // No exceptions, token is valid and we have username
+            // insert into database and store the primary key 
+            
             // retrieve username using Reddit.NET and variables from .env
-            // if successful, store hashed token and username in tables
+            // if successful, store hashed token and hashed username in tables
             // call AuthenticateUser(username, token)
             return "";
         }
@@ -49,15 +64,14 @@ namespace ModShark.Controllers.Api
         {
             var claims = new List<Claim>
             {
-                new Claim("username", "email"),
-                new Claim("name", "name"),
-                new Claim("role", "Administrator"),
+                new Claim("user_id", username),
+                new Claim("token", token),
             };
 
-            var claimsIdentity = new ClaimsIdentity(
+            ClaimsIdentity claimsIdentity = new ClaimsIdentity(
                 claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
-            var authProperties = new AuthenticationProperties
+            AuthenticationProperties authProperties = new AuthenticationProperties
             {
                 IsPersistent = true,
             };
