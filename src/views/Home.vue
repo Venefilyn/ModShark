@@ -22,6 +22,7 @@
 
 <script>
 import * as Snoowrap from "snoowrap";
+import axios from "axios";
 
 export default {
     data() {
@@ -51,7 +52,7 @@ export default {
                 state: this.$store.state.state // TODO: Change to randomly generated string that is stored in state
             });
             console.log(url);
-            this.popup = window.open(url, "mywindow", "width=500,height=350");
+            this.popup = window.open(url, "mywindow", "width=700,height=350");
         },
         updateAuthInfo(e) {
 
@@ -74,6 +75,13 @@ export default {
                 clientId: this.$store.state.clientId,
                 redirectUri: this.$store.state.redirectUrl
             }).then(r => {
+                axios.post("/api/authenticate", {
+                    "Token": r.accessToken
+                }, {
+                    headers: {
+                        'content-type': 'application/json;charset=utf-8'
+                    }
+                }).then(console.log).catch(alert);
                 this.$store.dispatch("updateAccessToken", r.accessToken);
                 this.$store.dispatch("updateReddit", r);
                 this.getMe()

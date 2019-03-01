@@ -46,12 +46,12 @@ namespace ModShark.Controllers.Api
 
         // POST api/authenticate
         [HttpPost]
-        public async Task<ActionResult<string>> Post([FromBody] string token)
+        public async Task<ActionResult<string>> Post([FromBody] TokenGroup tokenGroup)
         {
             string username;
             try
             {
-                RedditAPI reddit = new RedditAPI(System.Environment.GetEnvironmentVariable("VUE_APP_CLIENT_ID"), accessToken: token);
+                RedditAPI reddit = new RedditAPI(System.Environment.GetEnvironmentVariable("VUE_APP_CLIENT_ID"), accessToken: tokenGroup.Token);
                 username = reddit.Account.Me.Name;
             }
             catch (Exception e)
@@ -80,7 +80,7 @@ namespace ModShark.Controllers.Api
             // retrieve username using Reddit.NET and variables from .env
             // if successful, store hashed token and hashed username in tables
             // call AuthenticateUser(username, token)
-            await AuthenticateUser(user.Id, token);
+            await AuthenticateUser(user.Id, tokenGroup.Token);
             return NoContent();
         }
 

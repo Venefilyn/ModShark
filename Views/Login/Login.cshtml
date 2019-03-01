@@ -5,7 +5,11 @@
     <title>Logging in</title>
     <script>
         var url = new URL(window.location);
-        window.opener.postMessage(url.searchParams);
+        if (window.opener) {
+            window.opener.postMessage(url.searchParams);
+        } else {
+            window.location.href = "/";
+        }
     </script>
 </head>
 <body>
