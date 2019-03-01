@@ -35,7 +35,7 @@ namespace ModShark.Controllers.Api
                 // token exists, return it
                 return Ok(new Dictionary<string, string> {{"token", token.Value}});
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
                 // Match is null, remove logged in
                 await HttpContext.SignOutAsync();
@@ -51,7 +51,7 @@ namespace ModShark.Controllers.Api
             string username;
             try
             {
-                RedditAPI reddit = new RedditAPI("id", token);
+                RedditAPI reddit = new RedditAPI(System.Environment.GetEnvironmentVariable("VUE_APP_CLIENT_ID"), accessToken: token);
                 username = reddit.Account.Me.Name;
             }
             catch (Exception e)
@@ -68,7 +68,7 @@ namespace ModShark.Controllers.Api
                 string hashedUsername = RedditUser.HashUsername(username);
                 user = _context.RedditUsers.Single(u => u.Username == hashedUsername);
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
                 user = new RedditUser()
                 {
@@ -81,7 +81,7 @@ namespace ModShark.Controllers.Api
             // if successful, store hashed token and hashed username in tables
             // call AuthenticateUser(username, token)
             await AuthenticateUser(user.Id, token);
-            return Ok(new Dictionary<string, string>{{ "token", token }});
+            return NoContent();
         }
 
         private async Task AuthenticateUser(int userId, string token)

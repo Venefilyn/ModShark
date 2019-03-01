@@ -11,10 +11,9 @@ export default new Vuex.Store({
     accessToken: "",
     /** @member {Snoowrap|null} */
     reddit: null,
-    // TODO: Move out to .env
-    redirectUrl: "http://127.0.0.1:8080/#/",
-    // TODO: Move out to .env & match versioning to package.json
-    userAgent: "ModShark v0.1 by u/SpyTec13",
+    clientId: process.env.VUE_APP_CLIENT_ID,
+    redirectUrl: process.env.VUE_APP_REDIRECT_URL,
+    userAgent: process.env.VUE_APP_USER_AGENT,
     drawerSubreddits: null,
     drawerSettings: null,
   },

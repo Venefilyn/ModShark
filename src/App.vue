@@ -65,7 +65,7 @@
         Snoowrap.fromAuthCode({
           code: code,
           userAgent: this.$store.state.userAgent,
-          clientId: 'TL5jne9mkFesLQ',
+          clientId: this.$store.state.clientId,
           redirectUri: this.$store.state.redirectUrl
         }).then(r => {
           this.$store.dispatch("updateAccessToken", r.accessToken);
@@ -77,7 +77,7 @@
         let redirectUri = this.$store.state.redirectUrl;
         return;
         window.location.href = Snoowrap.getAuthUrl({
-          clientId: "TL5jne9mkFesLQ",
+          clientId: this.$store.state.clientId,
           scope: ["identity"],
           redirectUri: redirectUri,
           permanent: false,

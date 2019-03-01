@@ -21,10 +21,13 @@ namespace ModShark
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+            CurrentEnvironment = env;
         }
+
+        private IHostingEnvironment CurrentEnvironment{ get; set; } 
 
         public IConfiguration Configuration { get; }
 
@@ -35,9 +38,18 @@ namespace ModShark
                 .AddCookie(options => { options.Cookie.Name = "ModShark"; });
             
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
-            const string connection = "Data Source=db_name.sqlite";
-            services.AddDbContext<ModSharkContext>(options => options.UseSqlite(connection));
+
+            DotNetEnv.Env.Load(".env");
+            if (CurrentEnvironment.IsDevelopment())
+            {
+                DotNetEnv.Env.Load(".env.development");
+                const string connection = "Data Source=db_name.sqlite";
+                services.AddDbContext<ModSharkContext>(options => options.UseSqlite(connection));
+            }
+            else
+            {
+                DotNetEnv.Env.Load(".env.production");
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +58,6 @@ namespace ModShark
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                
                 app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
                 {
                     HotModuleReplacement = true,
