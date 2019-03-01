@@ -7,7 +7,18 @@ Vue.use(Router);
 
 let router = new Router({
   mode: 'history',
-  
+  beforeEach (to, from, next) 
+  {
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+      console.log("req auth", !localStorage.getItem('authenticated'));
+      if (!localStorage.getItem('authenticated')) {
+        next({
+          path: '/login'
+        });
+      }
+    }
+    next();
+  },
   routes: [
     {
       path: '*',
@@ -15,6 +26,14 @@ let router = new Router({
       component: CenteredText,
       props: {
         text: "Could not find anything!"
+      }
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: CenteredText,
+      props: {
+        text: "Login component here"
       }
     },
     {
@@ -33,6 +52,9 @@ let router = new Router({
     {
       path: '/settings',
       name: 'settings',
+      meta: {
+        requiresAuth: true,
+      },
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -41,6 +63,9 @@ let router = new Router({
     {
       path: '/r/:subreddit',
       name: 'subreddit',
+      meta: {
+        requiresAuth: true,
+      },
       children: [
         {
           path: 'modqueue',
@@ -72,7 +97,10 @@ let router = new Router({
       ]
     },
     {
-      path: '/modmail/:subreddits?',
+      path: '/modmail',
+      meta: {
+        requiresAuth: true,
+      },
       children: [
         {
           path: ':subreddits?',
@@ -88,6 +116,9 @@ let router = new Router({
     },
     {
       path: '/u/:username',
+      meta: {
+        requiresAuth: true,
+      },
       children: [
         {
           path: 'overview',
@@ -108,5 +139,6 @@ let router = new Router({
     }
   ]
 });
+
 
 export default router;

@@ -2,7 +2,7 @@
     <v-toolbar app>
         <v-toolbar-side-icon
                 @click.stop="drawerSubs = !drawerSubs"
-                v-show="$vuetify.breakpoint.mdAndDown"
+                v-show="$vuetify.breakpoint.mdAndDown && isAuthenticated"
         ></v-toolbar-side-icon>
         <v-toolbar-title>
             r/subreddit
@@ -12,7 +12,7 @@
                 @click.stop="drawerSett = !drawerSett"
                 flat
                 icon
-                v-show="$vuetify.breakpoint.lgAndDown"
+                v-show="$vuetify.breakpoint.lgAndDown && isAuthenticated"
         >
             <v-icon>settings</v-icon>
         </v-btn>
@@ -23,6 +23,12 @@
 
     export default {
         name: 'ms-main-toolbar',
+        props: {
+            isAuthenticated: {
+                type: Boolean,
+                default: true
+            },
+        },
         computed: {
             ...mapState([
                 "drawerSubreddits",

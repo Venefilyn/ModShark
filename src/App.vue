@@ -1,19 +1,16 @@
 <template>
   <v-app dark>
-    <ms-main-toolbar />
-    <ms-subreddits-drawer />
-    <ms-settings-drawer />
+    <ms-main-toolbar v-if="isAuthenticated"/>
+    <ms-subreddits-drawer v-if="isAuthenticated" />
+    <ms-settings-drawer v-if="isAuthenticated" />
     <v-content>
       <router-view></router-view>
     </v-content>
-    <ms-navigation-footer/>
+    <ms-navigation-footer v-if="isAuthenticated"/>
   </v-app>
 </template>
 
 <script>
-  import LocalAuthentication from "./models/LocalAuthentication";
-  import Snoowrap from "snoowrap";
-  import axios from "axios";
   import MsSubredditsDrawer from "./views/partials/SubredditsDrawer";
   import MsSettingsDrawer from "./views/partials/SettingsDrawer";
   import MsNavigationFooter from "./views/partials/NavigationFooter";
@@ -27,63 +24,9 @@
     MsSubredditsDrawer,
     MsSettingsDrawer,
   },
-  data() {
-    return {
-      me: null,
-    }
-  },
   computed: {
-    reddit() {
-      return this.$store.state.reddit;
-    }
-  },
-  methods: {
-    getMe() {
-      if (this.reddit) {
-        this.reddit.getPreferences().then(console.log);
-        this.reddit.getMe().then(me => {
-          console.log(me, typeof me);
-          this.me = me.name;
-        });
-      }
-    }
-  },
-  mounted() {
-    axios.get("/api/settings").then(response => console.log(response.data));
-    let token = new LocalAuthentication(this).getAccessToken();
-    if (token.length) {
-      // we have a token
-      this.$store.dispatch("updateAccessToken", token);
-      this.$store.dispatch("createRedditInstance");
-      this.getMe()
-    }
-    else {
-      // we do not have a token
-      let code = new URL(window.location.href).searchParams.get('code');
-
-      if (code) {
-        Snoowrap.fromAuthCode({
-          code: code,
-          userAgent: this.$store.state.userAgent,
-          clientId: this.$store.state.clientId,
-          redirectUri: this.$store.state.redirectUrl
-        }).then(r => {
-          this.$store.dispatch("updateAccessToken", r.accessToken);
-          this.$store.dispatch("updateReddit", r);
-          this.getMe()
-        })
-      }
-      else {
-        let redirectUri = this.$store.state.redirectUrl;
-        return;
-        window.location.href = Snoowrap.getAuthUrl({
-          clientId: this.$store.state.clientId,
-          scope: ["identity"],
-          redirectUri: redirectUri,
-          permanent: false,
-          state: "123"
-        })
-      }
+    isAuthenticated () {
+      return !!this.$store.state.authenticated;
     }
   }
 }

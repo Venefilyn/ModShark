@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import vuejsStorage from "vuejs-storage";
 import Snoowrap from "snoowrap";
+import uuid from "uuid";
 
 Vue.use(Vuex);
 Vue.use(vuejsStorage);
@@ -11,11 +12,14 @@ export default new Vuex.Store({
     accessToken: "",
     /** @member {Snoowrap|null} */
     reddit: null,
+    state: uuid.v4(),
     clientId: process.env.VUE_APP_CLIENT_ID,
     redirectUrl: process.env.VUE_APP_REDIRECT_URL,
     userAgent: process.env.VUE_APP_USER_AGENT,
     drawerSubreddits: null,
     drawerSettings: null,
+    authenticated: false,
+    settings: {}
   },
   mutations: {
     CREATE_REDDIT(state) {
@@ -36,6 +40,9 @@ export default new Vuex.Store({
     UPDATE_SETTINGS_DRAWER(state, value) {
       state.drawerSettings = value;
     },
+    UPDATE_AUTHENTICATED(state, value) {
+      state.authenticated = value;
+    }
   },
   actions: {
     createRedditInstance({ commit }) {
@@ -43,6 +50,7 @@ export default new Vuex.Store({
     },
     updateAccessToken({ commit }, token) {
       commit("UPDATE_ACCESS_TOKEN", token);
+      commit("UPDATE_AUTHENTICATED", true);
     },
     updateReddit({ commit }, reddit) {
       commit("UPDATE_REDDIT", reddit);
@@ -56,7 +64,7 @@ export default new Vuex.Store({
   },
   plugins: [
     vuejsStorage({
-      keys: ['accessToken'],
+      keys: ['authenticated', 'settings'],
       namespace: 'ms',
     })
   ]
