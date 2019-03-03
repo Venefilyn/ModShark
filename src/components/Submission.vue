@@ -34,7 +34,7 @@
 </template>
 
 <script>
-    import {objects} from "snoowrap";
+    import * as snoowrap from "snoowrap";
 
     export default {
         name: "ms-submission",
@@ -44,7 +44,7 @@
                 required: true,
                 validator: function (value) {
                     // The value must match one of these strings
-                    return value instanceof objects.Submission; 
+                    return value instanceof snoowrap.objects.Submission; 
                 } 
             }
         }

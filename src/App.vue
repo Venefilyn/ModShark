@@ -43,6 +43,10 @@
                     this.changeStoreLocally(false)
                 }
             }
+            else {
+                // retrieve from server
+                this.$store.dispatch("authenticateFromServer");
+            }
         },
         computed: {
             ...mapState(['accessToken', 'storeLocally', 'localAccessToken']),

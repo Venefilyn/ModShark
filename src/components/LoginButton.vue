@@ -50,6 +50,7 @@
                 popup: null,
                 serverFaultDialog: false,
                 serverRetries: 0,
+                closedPopupTimeoutID: null,
             }
         },
         mounted() {
@@ -85,9 +86,11 @@
             },
             detectClosedPopup() {
                 if (this.popup) {
-                    setTimeout(this.detectClosedPopup, 500);
                     if (this.popup.closed !== false) {
                         this.$emit("authenticating", false);
+                    }
+                    else {
+                        this.closedPopupTimeoutID = setTimeout(this.detectClosedPopup, 500);
                     }
                 }
             },
@@ -100,6 +103,7 @@
                 if (!(e.data instanceof URLSearchParams)) {
                     return;
                 }
+                clearTimeout(this.closedPopupTimeoutID);
                 let params = e.data;
 
                 if (this.popup) {
@@ -131,14 +135,6 @@
                     console.log(e);
                 }
             },
-            getMe() {
-                if (this.reddit) {
-                    this.reddit.getPreferences().then(console.log);
-                    this.reddit.getMe().then(me => {
-                        this.me = me.name;
-                    });
-                }
-            },
             async getReddit(code) {
                 return snoowrap.fromAuthCode({
                     code: code,
@@ -155,13 +151,16 @@
                         headers: {
                             'content-type': 'application/json;charset=utf-8'
                         },
-                        timeout: 5000, // 2s timeout
+                        timeout: 5000, // 5s timeout
                     });
                 } catch (e) {
-                    if (this.serverRetries < 2) {
+                    if (this.serverRetries <= 2) {
                         this.serverRetries += 1;
+                        console.log(this.serverRetries);
                         // Retry once a second
-                        setTimeout(this.updateServerAuth(accessToken), 1000)   
+                        let promise = new Promise(resolve => setTimeout(resolve, 1000));
+                        await promise;
+                        await this.updateServerAuth(accessToken)
                     }
                     else {
                         this.serverFaultDialog = true;

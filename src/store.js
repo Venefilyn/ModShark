@@ -70,7 +70,10 @@ export default new Vuex.Store({
     },
     changeStoreLocally({ commit }, value) {
       commit("UPDATE_STORE_LOCALLY", value)
-    }    
+    },
+    authenticateFromServer({ commit }) {
+      // retrieve from Api
+    }
   },
   plugins: [
     vuejsStorage({

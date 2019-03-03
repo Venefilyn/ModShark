@@ -8,7 +8,7 @@ using ModShark.Models;
 namespace ModShark.Migrations
 {
     [DbContext(typeof(ModSharkContext))]
-    [Migration("20190301154307_InitialCreate")]
+    [Migration("20190303134945_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
