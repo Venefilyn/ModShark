@@ -34,6 +34,12 @@
 
     export default {
         name: 'ms-subreddits-drawer',
+        props: {
+            visible: {
+                type: Boolean,
+                default: true
+            },
+        },
         computed: {
             ...mapState(["drawerSubreddits"]),
             drawer: {

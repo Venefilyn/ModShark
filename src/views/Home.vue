@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-layout wrap text-xs-center >
+        <v-layout wrap text-xs-center>
             <v-flex xs12>
                 <v-img
                         :src="require('../assets/logo.svg')"
@@ -11,90 +11,55 @@
                 ></v-img>
             </v-flex>
             <v-flex xs12>
-                Welcome to ModShark {{ username }}!
+                Welcome to ModShark!
             </v-flex>
             <v-flex xs12>
-                <v-btn @click="loginPopup">Login with Reddit</v-btn>
+                <login-button @authenticating="toggle = $event"></login-button>
             </v-flex>
+            <v-dialog
+                    :value="toggle"
+                    persistent
+                    width="180"
+                    no-click-animation
+                    dark
+            >
+                <v-container fluid text-xs-center grid-list-xl class="primary">
+                    <v-layout row wrap align-center>
+                        <v-flex>
+                            <div class="subheading">
+                                Logging you in!
+                            </div>
+                        </v-flex>
+                        <v-flex>
+                            <v-progress-circular
+                                    indeterminate
+                                    color="secondary"
+                                    class="mb-0"
+                            ></v-progress-circular>
+                        </v-flex>
+                    </v-layout>
+                </v-container>
+            </v-dialog>
         </v-layout>
     </v-container>
 </template>
 
 <script>
-import * as Snoowrap from "snoowrap";
-import axios from "axios";
+import LoginButton from "../components/LoginButton";
+import {mapState} from "vuex";
 
 export default {
     data() {
         return {
             popup: null,
-            me: null
+            toggle: false,
         }
     },
-    mounted() {
-        window.addEventListener('message', this.updateAuthInfo)
+    components: {
+        LoginButton,
     },
     computed: {
-        reddit() {
-            return this.$store.state.reddit;
-        },
-        username() {
-            return this.me ? this.me : "";
-        }
-    },
-    methods: {
-        loginPopup() {
-            const url = Snoowrap.getAuthUrl({
-                clientId: this.$store.state.clientId,
-                scope: ["identity"],
-                redirectUri: this.$store.state.redirectUrl,
-                permanent: false,
-                state: this.$store.state.state // TODO: Change to randomly generated string that is stored in state
-            });
-            console.log(url);
-            this.popup = window.open(url, "mywindow", "width=700,height=350");
-        },
-        updateAuthInfo(e) {
-
-            if (!(e.data instanceof URLSearchParams)) {
-                return;
-            }
-            if (this.popup) {
-                this.popup.close();
-            }
-            
-            /** @member {URLSearchParams} params **/
-            let params = e.data;
-            if (this.$store.state.state !== params.get('state')) {
-                return; // Return - state is not the same
-            }
-
-            Snoowrap.fromAuthCode({
-                code: params.get('code'),
-                userAgent: this.$store.state.userAgent,
-                clientId: this.$store.state.clientId,
-                redirectUri: this.$store.state.redirectUrl
-            }).then(r => {
-                axios.post("/api/authenticate", {
-                    "Token": r.accessToken
-                }, {
-                    headers: {
-                        'content-type': 'application/json;charset=utf-8'
-                    }
-                }).then(console.log).catch(alert);
-                this.$store.dispatch("updateAccessToken", r.accessToken);
-                this.$store.dispatch("updateReddit", r);
-                this.getMe()
-            })
-        },
-        getMe() {
-            if (this.reddit) {
-                this.reddit.getPreferences().then(console.log);
-                this.reddit.getMe().then(me => {
-                    this.me = me.name;
-                });
-            }
-        }
+        ...mapState(["authenticated"])
     },
 }
 </script>

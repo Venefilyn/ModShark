@@ -18,8 +18,9 @@ export default new Vuex.Store({
     userAgent: process.env.VUE_APP_USER_AGENT,
     drawerSubreddits: null,
     drawerSettings: null,
-    authenticated: false,
-    settings: {}
+    settings: {},
+    storeLocally: false,
+    localAccessToken: "",
   },
   mutations: {
     CREATE_REDDIT(state) {
@@ -30,6 +31,9 @@ export default new Vuex.Store({
     },
     UPDATE_ACCESS_TOKEN(state, token) {
       state.accessToken = token;
+      if (state.storeLocally) {
+        state.localAccessToken = token;
+      }
     },
     UPDATE_REDDIT(state, reddit) {
       state.reddit = reddit;
@@ -42,6 +46,9 @@ export default new Vuex.Store({
     },
     UPDATE_AUTHENTICATED(state, value) {
       state.authenticated = value;
+    },
+    UPDATE_STORE_LOCALLY(state, value) {
+      state.storeLocally = value;
     }
   },
   actions: {
@@ -61,10 +68,13 @@ export default new Vuex.Store({
     updateSettingsDrawer({ commit }, value) {
       commit("UPDATE_SETTINGS_DRAWER", value);
     },
+    changeStoreLocally({ commit }, value) {
+      commit("UPDATE_STORE_LOCALLY", value)
+    }    
   },
   plugins: [
     vuejsStorage({
-      keys: ['authenticated', 'settings'],
+      keys: ['authenticated', 'settings', 'storeLocally', 'localAccessToken'],
       namespace: 'ms',
     })
   ]
