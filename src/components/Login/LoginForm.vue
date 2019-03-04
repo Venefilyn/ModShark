@@ -1,7 +1,21 @@
 <template>
     <v-container>
-        <!-- TODO: Move to separate component -->
         <ms-login-server-dialog v-model="serverFaultDialog"></ms-login-server-dialog>
+        <v-snackbar
+                v-model="authError"
+                top
+                auto-height
+                :timeout="0"
+        >
+            Error: {{ authErrorMsg }}
+            <v-btn
+                    color="pink"
+                    flat
+                    @click="authError = false"
+            >
+                Close
+            </v-btn>
+        </v-snackbar>
         <v-layout wrap>
             <v-flex xs12>
                 <v-checkbox v-model="localUsage" class="justify-center" label="Use locally"></v-checkbox>
@@ -32,6 +46,8 @@
                 serverFaultDialog: false,
                 serverRetries: 0,
                 closedPopupTimeoutID: null,
+                authError: false,
+                authErrorMsg: "",
             }
         },
         mounted() {
@@ -61,18 +77,20 @@
                     permanent: process.env.NODE_ENV === "production",
                     state: this.$store.state.state
                 });
+                this.authError = false;
                 this.$emit("authenticating", true);
                 this.popup = window.open(url, "mywindow", "width=850,height=400");
                 this.detectClosedPopup()
             },
             detectClosedPopup() {
-                if (this.popup) {
-                    if (this.popup.closed !== false) {
-                        this.$emit("authenticating", false);
-                    }
-                    else {
-                        this.closedPopupTimeoutID = setTimeout(this.detectClosedPopup, 500);
-                    }
+                if (!this.popup) { 
+                    return;
+                }
+                if (this.popup.closed !== false) {
+                    this.$emit("authenticating", false);
+                }
+                else {
+                    this.closedPopupTimeoutID = setTimeout(this.detectClosedPopup, 500);
                 }
             },
             /**
@@ -101,6 +119,7 @@
                     /** @member {snoowrap} r **/
                     let r = await this.getReddit(params.get('code'));
                     let me = await r.getMe();
+
                     if (!(me instanceof snoowrap.objects.RedditUser)) {
                         // noinspection ExceptionCaughtLocallyJS
                         throw new Error("Could not get Reddit user, aborting.")
@@ -114,6 +133,9 @@
                     RedditFactory.setReddit(r);
                 } catch (e) {
                     // Create snackbar about error
+                    this.$emit("authenticating", false);
+                    this.authError = true; 
+                    this.authErrorMsg = e.message; 
                     console.log(e);
                 }
             },
