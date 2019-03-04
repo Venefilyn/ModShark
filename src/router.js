@@ -35,7 +35,7 @@ let router = new Router({
       beforeEnter: (to, from, next) => {
         let ms = JSON.parse(localStorage.getItem('ms'));
         if (ms['authenticated']) {
-          next("/about");
+          next({name: 'subreddit_modqueue', params: {subreddit: "mod"}});
         }
         next();
       }

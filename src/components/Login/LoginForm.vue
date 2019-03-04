@@ -133,6 +133,9 @@
                     this.$emit("authenticating", false);
                     this.$store.dispatch("updateAccessToken", r.accessToken);
                     RedditFactory.setReddit(r);
+                    
+                    // Redirect to main view
+                    this.$router.push({name: 'subreddit_modqueue', params: {subreddit: "mod"}});
                 } catch (e) {
                     // Create snackbar about error
                     this.$emit("authenticating", false);
