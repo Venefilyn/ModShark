@@ -1,9 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import vuejsStorage from "vuejs-storage";
-import Snoowrap from "snoowrap";
+import * as snoowrap from "snoowrap";
 import uuid from "uuid";
 import * as api from "./api";
+import {CLIENT_ID, REDIRECT_URL, USER_AGENT} from "../models/RedditFactory";
+import RedditFactory from "../models/RedditFactory";
 
 Vue.use(Vuex);
 Vue.use(vuejsStorage);
@@ -12,11 +14,10 @@ export default new Vuex.Store({
   state: {
     accessToken: "",
     /** @member {Snoowrap|null} */
-    reddit: null,
     state: uuid.v4(),
-    clientId: process.env.VUE_APP_CLIENT_ID,
-    redirectUrl: process.env.VUE_APP_REDIRECT_URL,
-    userAgent: process.env.VUE_APP_USER_AGENT,
+    clientId: CLIENT_ID,
+    redirectUrl: REDIRECT_URL,
+    userAgent: USER_AGENT,
     drawerSubreddits: null,
     drawerSettings: null,
     settings: {},
@@ -24,20 +25,11 @@ export default new Vuex.Store({
     localAccessToken: "",
   },
   mutations: {
-    CREATE_REDDIT(state) {
-      state.reddit = new Snoowrap({
-        accessToken: state.accessToken,
-        userAgent: state.userAgent
-      });
-    },
     UPDATE_ACCESS_TOKEN(state, token) {
       state.accessToken = token;
       if (state.storeLocally) {
         state.localAccessToken = token;
       }
-    },
-    UPDATE_REDDIT(state, reddit) {
-      state.reddit = reddit;
     },
     UPDATE_SUBREDDITS_DRAWER(state, value) {
       state.drawerSubreddits = value;
@@ -53,15 +45,9 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    createRedditInstance({ commit }) {
-      commit("CREATE_REDDIT");
-    },
     updateAccessToken({ commit }, token) {
       commit("UPDATE_ACCESS_TOKEN", token);
       commit("UPDATE_AUTHENTICATED", true);
-    },
-    updateReddit({ commit }, reddit) {
-      commit("UPDATE_REDDIT", reddit);
     },
     updateSubredditsDrawer({ commit }, value) {
       commit("UPDATE_SUBREDDITS_DRAWER", value);
@@ -80,7 +66,20 @@ export default new Vuex.Store({
     async authenticateFromServer({ commit }) {
       let token = await api.getToken();
       if (token) {
-        commit("UPDATE_ACCESS_TOKEN", token)
+        
+        let r = new snoowrap({
+          accessToken: token,
+          clientId: CLIENT_ID,
+          userAgent: USER_AGENT
+        });
+        RedditFactory.setReddit(r);
+        let me = await r.getMe();
+
+        if (!(me instanceof snoowrap.objects.RedditUser)) {
+          throw new Error("Could not get Reddit user, aborting.")
+        }
+        console.log(RedditFactory.instance());
+        commit("UPDATE_ACCESS_TOKEN", token);
       }
     }
   },
