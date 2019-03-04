@@ -44,8 +44,12 @@
                 }
             }
             else {
-                // retrieve from server
-                this.$store.dispatch("authenticateFromServer");
+                // try authenticating from server
+                try {
+                    this.$store.dispatch("authenticateFromServer");
+                } catch (e) {
+                    alert(e);
+                }
             }
         },
         computed: {

@@ -10,10 +10,10 @@ let router = new Router({
   beforeEach (to, from, next) 
   {
     if (to.matched.some(record => record.meta.requiresAuth)) {
-      console.log("req auth", !localStorage.getItem('authenticated'));
-      if (!localStorage.getItem('authenticated')) {
+      let ms = JSON.parse(localStorage.getItem('ms'));
+      if (!ms['authenticated']) {
         next({
-          path: '/login'
+          path: '/'
         });
       }
     }
@@ -29,17 +29,16 @@ let router = new Router({
       }
     },
     {
-      path: '/login',
-      name: 'login',
-      component: CenteredText,
-      props: {
-        text: "Login component here"
-      }
-    },
-    {
       path: '/',
       name: 'home',
-      component: Home
+      component: Home,
+      beforeEnter: (to, from, next) => {
+        let ms = JSON.parse(localStorage.getItem('ms'));
+        if (ms['authenticated']) {
+          next("/about");
+        }
+        next();
+      }
     },
     {
       path: '/about',

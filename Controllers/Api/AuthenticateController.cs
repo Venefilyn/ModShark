@@ -40,7 +40,6 @@ namespace ModShark.Controllers.Api
                 // Match is null, remove logged in
                 await HttpContext.SignOutAsync();
             }
-
             return Unauthorized();
         }
 

@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import vuejsStorage from "vuejs-storage";
 import Snoowrap from "snoowrap";
 import uuid from "uuid";
+import * as api from "./api";
 
 Vue.use(Vuex);
 Vue.use(vuejsStorage);
@@ -71,8 +72,16 @@ export default new Vuex.Store({
     changeStoreLocally({ commit }, value) {
       commit("UPDATE_STORE_LOCALLY", value)
     },
-    authenticateFromServer({ commit }) {
-      // retrieve from Api
+    /**
+     * @param commit
+     * @returns {Promise<string>}
+     * @throws {Error}
+     */
+    async authenticateFromServer({ commit }) {
+      let token = await api.getToken();
+      if (token) {
+        commit("UPDATE_ACCESS_TOKEN", token)
+      }
     }
   },
   plugins: [
