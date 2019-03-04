@@ -13,13 +13,13 @@ Vue.use(vuejsStorage);
 export default new Vuex.Store({
   state: {
     accessToken: "",
-    /** @member {Snoowrap|null} */
     state: uuid.v4(),
     clientId: CLIENT_ID,
     redirectUrl: REDIRECT_URL,
     userAgent: USER_AGENT,
     drawerSubreddits: null,
     drawerSettings: null,
+    authenticated: false,
     settings: {},
     storeLocally: false,
     localAccessToken: "",
@@ -30,6 +30,9 @@ export default new Vuex.Store({
       if (state.storeLocally) {
         state.localAccessToken = token;
       }
+    },
+    UPDATE_LOCAL_TOKEN(state) {
+      state.localAccessToken = state.accessToken;
     },
     UPDATE_SUBREDDITS_DRAWER(state, value) {
       state.drawerSubreddits = value;
@@ -42,9 +45,16 @@ export default new Vuex.Store({
     },
     UPDATE_STORE_LOCALLY(state, value) {
       state.storeLocally = value;
+    },
+    CHANGE_SETTINGS(state, value) {
+      state.settings = value;
     }
   },
   actions: {
+    switchToLocal({ commit }) {
+      commit("UPDATE_STORE_LOCALLY", true);
+      commit("UPDATE_LOCAL_TOKEN");
+    },
     updateAccessToken({ commit }, token) {
       commit("UPDATE_ACCESS_TOKEN", token);
       commit("UPDATE_AUTHENTICATED", true);
@@ -57,6 +67,13 @@ export default new Vuex.Store({
     },
     changeStoreLocally({ commit }, value) {
       commit("UPDATE_STORE_LOCALLY", value)
+    },
+    logOut({ commit }) {
+      commit("UPDATE_ACCESS_TOKEN", "");
+      commit("UPDATE_LOCAL_TOKEN");
+      commit("UPDATE_STORE_LOCALLY", false);
+      commit("CHANGE_SETTINGS", {});
+      commit("UPDATE_AUTHENTICATED", false);
     },
     /**
      * @param commit
@@ -78,7 +95,6 @@ export default new Vuex.Store({
         if (!(me instanceof snoowrap.objects.RedditUser)) {
           throw new Error("Could not get Reddit user, aborting.")
         }
-        console.log(RedditFactory.instance());
         commit("UPDATE_ACCESS_TOKEN", token);
       }
     }

@@ -48,7 +48,7 @@
                 try {
                     this.$store.dispatch("authenticateFromServer");
                 } catch (e) {
-                    alert(e);
+                    this.$store.dispatch("logOut");
                 }
             }
         },

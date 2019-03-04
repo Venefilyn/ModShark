@@ -22,7 +22,7 @@
             <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn @click="$emit('input', false)">Continue</v-btn>
-                <v-btn @click="$emit('input', false)">Use locally</v-btn>
+                <v-btn @click="this.switch">Use locally</v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
@@ -36,6 +36,12 @@
                 type: Boolean,
                 required: true
             },
+        },
+        methods: {
+            switch() {
+                this.$store.dispatch("switchToLocal");
+                this.$emit('input', false);
+            }
         },
     }
 </script>
