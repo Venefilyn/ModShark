@@ -72,10 +72,22 @@
             loginPopup() {
                 const url = snoowrap.getAuthUrl({
                     clientId: this.$store.state.clientId,
-                    scope: ["identity"],
                     redirectUri: this.$store.state.redirectUrl,
                     permanent: process.env.NODE_ENV === "production",
-                    state: this.$store.state.state
+                    state: this.$store.state.state,
+                    scope: [
+                        'modmail',
+                        'wikiedit',
+                        'mysubreddits',
+                        'submit',
+                        'modlog',
+                        'modposts',
+                        'modflair',
+                        'modothers',
+                        'identity',
+                        'read',
+                        'report',
+                    ]
                 });
                 this.authError = false;
                 this.$emit("authenticating", true);

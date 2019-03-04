@@ -1,19 +1,19 @@
 <template>
     <v-app dark>
         <v-expand-transition>
-            <ms-main-toolbar v-show="isAuthenticated"/>
+            <ms-main-toolbar v-if="isAuthenticated"/>
         </v-expand-transition>
         <v-expand-x-transition>
-            <ms-subreddits-drawer v-show="isAuthenticated"/>
+            <ms-subreddits-drawer v-if="isAuthenticated"/>
         </v-expand-x-transition>
         <v-expand-x-transition>
-            <ms-settings-drawer v-show="isAuthenticated"/>
+            <ms-settings-drawer v-if="isAuthenticated"/>
         </v-expand-x-transition>
         <v-content>
             <router-view></router-view>
         </v-content>
         <v-expand-transition>
-            <ms-navigation-footer v-show="isAuthenticated"/>
+            <ms-navigation-footer v-if="isAuthenticated"/>
         </v-expand-transition>
     </v-app>
 </template>
