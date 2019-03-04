@@ -112,6 +112,8 @@
                 }
 
                 if (this.$store.state.state !== params.get('state')) {
+                    this.$emit("authenticating", false);
+                    console.log("state query from Reddit is not the same as in state. Security issue, ignoring");
                     return; // Return - state is not the same
                 }
 
