@@ -14,7 +14,7 @@
                 Welcome to ModShark!
             </v-flex>
             <v-flex xs12>
-                <login-button @authenticating="toggle = $event"></login-button>
+                <ms-login-form @authenticating="toggle = $event"></ms-login-form>
             </v-flex>
             <v-dialog
                     :value="toggle"
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import LoginButton from "../components/LoginButton";
+import MsLoginForm from "../components/Login/LoginForm";
 import {mapState} from "vuex";
 
 export default {
@@ -56,7 +56,7 @@ export default {
         }
     },
     components: {
-        LoginButton,
+        MsLoginForm,
     },
     computed: {
         ...mapState(["authenticated"])

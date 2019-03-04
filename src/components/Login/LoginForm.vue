@@ -1,31 +1,7 @@
 <template>
     <v-container>
         <!-- TODO: Move to separate component -->
-        <v-dialog v-model="serverFaultDialog" persistent>
-            <v-card>
-                <v-card-title class="headline">Server error!</v-card-title>
-                <v-card-text>
-                    <v-container fluid grid-list-md my-0>
-                        <v-layout wrap>
-                            <v-flex xs12>
-                                We could not get in contact with the ModShark server. You can choose to either continue the application without a server temporarily or use ModShark without the ModShark server.
-                            </v-flex>
-                            <v-flex xs12>
-                                Choosing Continue will work for the time being, and you will have a synchronize button in settings sidebar to login to server at a later time.  
-                            </v-flex>
-                            <v-flex xs12>
-                                Choosing Use locally will work now going forward. Your settings will not be synchronized between devices. You will be able to use the application with no repercussions.
-                            </v-flex>
-                        </v-layout>
-                    </v-container>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn @click="serverFaultDialog = false">Continue</v-btn>
-                    <v-btn @click="serverFaultDialog = false">Use locally</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
+        <ms-login-server-dialog v-model="serverFaultDialog"></ms-login-server-dialog>
         <v-layout wrap>
             <v-flex xs12>
                 <v-checkbox v-model="localUsage" class="justify-center" label="Use locally"></v-checkbox>
@@ -42,9 +18,14 @@
     import * as snoowrap from "snoowrap";
     import axios from "axios";
     import {mapActions, mapState} from "vuex";
-
+    import RedditFactory from "../../models/RedditFactory";
+    import MsLoginServerDialog from "./LoginServerDialog";
+    
     export default {
-        name: "ms-login-button",
+        name: "ms-login-form",
+        components: {
+            MsLoginServerDialog,
+        },
         data() {
             return {
                 popup: null,
@@ -81,7 +62,7 @@
                     state: this.$store.state.state
                 });
                 this.$emit("authenticating", true);
-                this.popup = window.open(url, "mywindow", "width=700,height=350");
+                this.popup = window.open(url, "mywindow", "width=850,height=400");
                 this.detectClosedPopup()
             },
             detectClosedPopup() {
@@ -104,13 +85,14 @@
                     return;
                 }
                 clearTimeout(this.closedPopupTimeoutID);
+                
+                /** @member {URLSearchParams} params **/
                 let params = e.data;
 
                 if (this.popup) {
                     this.popup.close();
                 }
 
-                /** @member {URLSearchParams} params **/
                 if (this.$store.state.state !== params.get('state')) {
                     return; // Return - state is not the same
                 }
@@ -129,7 +111,7 @@
 
                     this.$emit("authenticating", false);
                     this.$store.dispatch("updateAccessToken", r.accessToken);
-                    this.$store.dispatch("updateReddit", r);
+                    RedditFactory.setReddit(r);
                 } catch (e) {
                     // Create snackbar about error
                     console.log(e);
@@ -156,7 +138,6 @@
                 } catch (e) {
                     if (this.serverRetries <= 2) {
                         this.serverRetries += 1;
-                        console.log(this.serverRetries);
                         // Retry once a second
                         let promise = new Promise(resolve => setTimeout(resolve, 1000));
                         await promise;
