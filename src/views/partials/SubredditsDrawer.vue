@@ -11,17 +11,17 @@
 
         <v-list>
             <v-list-tile
-                    @click=""
+                    @click="changeSubreddit('mod')"
             >
                 <v-list-tile-content>
-                    <v-list-tile-title>r/all</v-list-tile-title>
+                    <v-list-tile-title>r/mod</v-list-tile-title>
                 </v-list-tile-content>
             </v-list-tile>
             <v-divider></v-divider>
             <v-list-tile
                     v-for="subreddit in subredditList"
                     :key="subreddit"
-                    @click=""
+                    @click="changeSubreddit(subreddit)"
             >
                 <v-list-tile-content>
                     <v-list-tile-title>r/{{ subreddit }}</v-list-tile-title>
@@ -49,6 +49,9 @@
                 default: true
             },
         },
+        mounted() {
+            this.updateModeratedList();
+        },
         computed: {
             ...mapState(["drawerSubreddits", "authenticated"]),
             drawer: {
@@ -63,18 +66,19 @@
                 return RedditFactory.instance()
             }
         },
-        mounted() {
-            this.updateModeratedList();
-        },
         methods: {
-            ...mapActions(["updateSubredditsDrawer"]),
+            ...mapActions(["updateSubredditsDrawer", "updateSelectedSubreddit"]),
             async updateModeratedList() {
                 if (!this.reddit) {
                     console.error("Reddit instance is null");
                     return;
                 }
                 this.subredditList = await this.reddit.getModeratedSubreddits().map(s => s['display_name']);
-            }
+            },
+            changeSubreddit(subreddit) {
+                this.updateSelectedSubreddit(subreddit);
+                this.$router.push({ name: "subreddit_modqueue", params: {subreddit: subreddit}})
+            },
         },
     }
 </script>

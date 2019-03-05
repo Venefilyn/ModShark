@@ -5,7 +5,7 @@
                 v-show="$vuetify.breakpoint.mdAndDown && isAuthenticated"
         ></v-toolbar-side-icon>
         <v-toolbar-title>
-            r/subreddit
+            r/{{ subreddit }}
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn
@@ -33,6 +33,7 @@
             ...mapState([
                 "drawerSubreddits",
                 "drawerSettings",
+                "subreddit",
             ]),
             drawerSubs: {
                 get() {

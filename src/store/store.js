@@ -23,6 +23,7 @@ export default new Vuex.Store({
     settings: {},
     storeLocally: false,
     localAccessToken: "",
+    subreddit: "mod",
   },
   mutations: {
     UPDATE_ACCESS_TOKEN(state, token) {
@@ -48,6 +49,9 @@ export default new Vuex.Store({
     },
     CHANGE_SETTINGS(state, value) {
       state.settings = value;
+    },
+    UPDATE_SELECTED_SUBREDDIT(state, value) {
+      state.subreddit = value;
     }
   },
   actions: {
@@ -74,6 +78,9 @@ export default new Vuex.Store({
       commit("UPDATE_STORE_LOCALLY", false);
       commit("CHANGE_SETTINGS", {});
       commit("UPDATE_AUTHENTICATED", false);
+    },
+    updateSelectedSubreddit({ commit }, subreddit) {
+      commit("UPDATE_SELECTED_SUBREDDIT", subreddit);
     },
     /**
      * @param commit

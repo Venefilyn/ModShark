@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import CenteredText from "./views/CenteredText";
+import Modqueue from "./views/Modqueue";
 
 Vue.use(Router);
 
@@ -16,6 +17,7 @@ let router = new Router({
           path: '/'
         });
       }
+      // else if here that checks that Reddit singleton is set. If not, redirect to authenticating loading screen component 
     }
     next();
   },
@@ -62,6 +64,9 @@ let router = new Router({
     {
       path: '/r/:subreddit',
       name: 'subreddit',
+      component: {
+        render (c) { return c('router-view') }
+      },
       meta: {
         requiresAuth: true,
       },
@@ -69,7 +74,7 @@ let router = new Router({
         {
           path: 'modqueue',
           name: 'subreddit_modqueue',
-          component: Home
+          component: Modqueue
         },
         {
           path: 'unmoderated',
@@ -97,6 +102,9 @@ let router = new Router({
     },
     {
       path: '/modmail',
+      component: {
+        render (c) { return c('router-view') }
+      },
       meta: {
         requiresAuth: true,
       },
