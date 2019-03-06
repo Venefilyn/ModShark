@@ -33,7 +33,7 @@
             MsSubredditsDrawer,
             MsSettingsDrawer,
         },
-        mounted() {
+        async mounted() {
             // If used stores locally, update access token
             if (this.storeLocally) {
                 if (this.localAccessToken.length > 0) {
@@ -46,7 +46,7 @@
             else {
                 // try authenticating from server
                 try {
-                    this.$store.dispatch("authenticateFromServer");
+                    await this.$store.dispatch("authenticateFromServer");
                 } catch (e) {
                     this.$store.dispatch("logOut");
                 }
