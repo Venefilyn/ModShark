@@ -20,11 +20,11 @@
             <v-divider></v-divider>
             <v-list-tile
                     v-for="subreddit in subredditList"
-                    :key="subreddit"
-                    @click="changeSubreddit(subreddit)"
+                    :key="subreddit.display_name"
+                    @click="changeSubreddit(subreddit.display_name)"
             >
                 <v-list-tile-content>
-                    <v-list-tile-title>r/{{ subreddit }}</v-list-tile-title>
+                    <v-list-tile-title>r/{{ subreddit.display_name }}</v-list-tile-title>
                 </v-list-tile-content>
             </v-list-tile>
         </v-list>
@@ -73,7 +73,7 @@
                     console.error("Reddit instance is null");
                     return;
                 }
-                this.subredditList = await this.reddit.getModeratedSubreddits().map(s => s['display_name']);
+                this.subredditList = await this.reddit.getModeratedSubreddits();
             },
             changeSubreddit(subreddit) {
                 this.updateSelectedSubreddit(subreddit);

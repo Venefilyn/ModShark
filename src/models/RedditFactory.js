@@ -26,6 +26,7 @@ export default class RedditFactory {
         if (!(reddit instanceof snoowrap)) {
             throw new TypeError("Parameter must be a snoowrap instance.")
         }
+        reddit.config({ proxies: false});
         // noinspection JSValidateTypes
         this._redditInstance = reddit;
     }

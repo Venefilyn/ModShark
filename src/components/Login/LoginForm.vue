@@ -132,6 +132,7 @@
                 try {
                     /** @member {snoowrap} r **/
                     let r = await this.getReddit(params.get('code'));
+                    RedditFactory.setReddit(r);
                     let me = await r.getMe();
 
                     if (!(me instanceof snoowrap.objects.RedditUser)) {
@@ -144,7 +145,6 @@
 
                     this.$emit("authenticating", false);
                     this.$store.dispatch("updateAccessToken", r.accessToken);
-                    RedditFactory.setReddit(r);
                     
                     // Redirect to main view
                     this.$router.push({name: 'subreddit_modqueue', params: {subreddit: "mod"}});
