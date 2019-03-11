@@ -7,7 +7,7 @@
                 :value="true"
         >
             <v-btn
-                    :to="{ name: 'subreddit_modqueue', params: { subreddit: subreddit }}"
+                    :to="{ name: 'subreddit_modqueue', params: { subreddit: getSubredditName }}"
                     value="modqueue"
                     flat
             >
@@ -15,7 +15,7 @@
                 <v-icon>assignment</v-icon>
             </v-btn>
             <v-btn
-                    :to="{ name: 'subreddit_unmoderated', params: { subreddit: subreddit }}"
+                    :to="{ name: 'subreddit_unmoderated', params: { subreddit: getSubredditName }}"
                     value="unmoderated"
                     flat
             >
@@ -23,7 +23,7 @@
                 <v-icon>list</v-icon>
             </v-btn>
             <v-btn
-                    :to="{ name: 'modmail', params: { subreddits: subreddit }}"
+                    :to="{ name: 'modmail', params: { subreddits: getSubredditName }}"
                     value="modmail"
                     flat
             >
@@ -82,14 +82,14 @@
 </template>
 
 <script>
-    import {mapState} from "vuex";
+    import {mapGetters, mapState} from "vuex";
 
     export default {
         name: 'ms-navigation-footer',
         data() {
             return {
                 sheet: false,
-                bottomNavData: "modqueue",
+                bottomNavData: this.$route.name,
                 tiles: ['test', 'test2']
             }
         },
@@ -104,7 +104,8 @@
                         this.bottomNavData = value;
                     }
                 }
-            }
+            },
+            ...mapGetters(["getSubredditName"])
         },
     }
 </script>

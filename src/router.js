@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import CenteredText from "./views/CenteredText";
 import Modqueue from "./views/Modqueue";
+import SubredditView from "./components/SubredditView";
 
 Vue.use(Router);
 
@@ -64,9 +65,7 @@ let router = new Router({
     {
       path: '/r/:subreddit',
       name: 'subreddit',
-      component: {
-        render (c) { return c('router-view') }
-      },
+      component: SubredditView,
       meta: {
         requiresAuth: true,
       },

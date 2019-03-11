@@ -52,6 +52,9 @@ export default new Vuex.Store({
     },
     UPDATE_SELECTED_SUBREDDIT(state, value) {
       state.subreddit = value;
+    },
+    UPDATE_SELECTED_SUBREDDIT_OBJECT(state, r) {
+      state.subreddit = r.getSubreddit(state.subreddit);
     }
   },
   actions: {
@@ -98,12 +101,18 @@ export default new Vuex.Store({
         });
         RedditFactory.setReddit(r);
         let me = await r.getMe();
+        commit("UPDATE_SELECTED_SUBREDDIT_OBJECT", r);
 
         if (!(me instanceof snoowrap.objects.RedditUser)) {
           throw new Error("Could not get Reddit user, aborting.")
         }
         commit("UPDATE_ACCESS_TOKEN", token);
       }
+    }
+  },
+  getters: {
+    getSubredditName(state) {
+      return state.subreddit instanceof Object ? state.subreddit.display_name : state.subreddit;
     }
   },
   plugins: [

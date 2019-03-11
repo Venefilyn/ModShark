@@ -134,6 +134,7 @@
                     let r = await this.getReddit(params.get('code'));
                     RedditFactory.setReddit(r);
                     let me = await r.getMe();
+                    this.$store.dispatch("UPDATE_SELECTED_SUBREDDIT_OBJECT", r);
 
                     if (!(me instanceof snoowrap.objects.RedditUser)) {
                         // noinspection ExceptionCaughtLocallyJS

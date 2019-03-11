@@ -59,7 +59,7 @@
             }
         },
         methods: {
-            ...mapActions(['changeStoreLocally'])
+            ...mapActions(['changeStoreLocally']),
         },
     }
 </script>

@@ -5,7 +5,7 @@
                 v-show="$vuetify.breakpoint.mdAndDown && isAuthenticated"
         ></v-toolbar-side-icon>
         <v-toolbar-title>
-            r/{{ subreddit }}
+            r/{{ getSubredditName() }}
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn
@@ -19,7 +19,7 @@
     </v-toolbar>
 </template>
 <script>
-    import {mapActions, mapState} from "vuex";
+    import {mapActions, mapState, mapGetters} from "vuex";
 
     export default {
         name: 'ms-main-toolbar',
@@ -53,7 +53,8 @@
             },
         },
         methods: {
-            ...mapActions(["updateSubredditsDrawer", "updateSettingsDrawer"])
+            ...mapActions(["updateSubredditsDrawer", "updateSettingsDrawer"]),
+            ...mapGetters(['getSubredditName']),
         },
     }
 </script>

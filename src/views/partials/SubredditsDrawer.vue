@@ -21,7 +21,7 @@
             <v-list-tile
                     v-for="subreddit in subredditList"
                     :key="subreddit.display_name"
-                    @click="changeSubreddit(subreddit.display_name)"
+                    @click="changeSubreddit(subreddit)"
             >
                 <v-list-tile-content>
                     <v-list-tile-title>r/{{ subreddit.display_name }}</v-list-tile-title>
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-    import {mapActions, mapState} from "vuex";
+    import {mapActions, mapGetters, mapState} from "vuex";
     import RedditFactory from "../../models/RedditFactory";
 
     export default {
@@ -68,6 +68,7 @@
         },
         methods: {
             ...mapActions(["updateSubredditsDrawer", "updateSelectedSubreddit"]),
+            ...mapGetters(["getSubredditName"]),
             async updateModeratedList() {
                 if (!this.reddit) {
                     console.error("Reddit instance is null");
@@ -77,7 +78,7 @@
             },
             changeSubreddit(subreddit) {
                 this.updateSelectedSubreddit(subreddit);
-                this.$router.push({ name: "subreddit_modqueue", params: {subreddit: subreddit}})
+                this.$router.push({ name: "subreddit_modqueue", params: {subreddit: this.getSubredditName()}})
             },
         },
     }
