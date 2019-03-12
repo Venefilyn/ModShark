@@ -18,15 +18,15 @@ export default class RedditFactory {
     static instance() {
         return this._redditInstance;
     }
-    
-    /** 
+
+    /**
      * @param reddit - A snoowrap Reddit instance.
      */
     static setReddit(reddit) {
         if (!(reddit instanceof snoowrap)) {
             throw new TypeError("Parameter must be a snoowrap instance.")
         }
-        reddit.config({ proxies: false});
+        reddit.config({ proxies: false });
         // noinspection JSValidateTypes
         this._redditInstance = reddit;
     }
