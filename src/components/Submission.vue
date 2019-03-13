@@ -1,34 +1,75 @@
 <template>
     <v-flex xs12>
         <v-card>
-            <v-layout class="pl-2 pr-2">
-                <v-flex xs3 sm2 lg1>
-                    <v-img
-                            src="https://cdn.vuetifyjs.com/images/cards/foster.jpg"
-                            height="125px"
-                            contain
-                    ></v-img>
+            <v-layout>
+                <v-flex xs3 sm2 lg1 v-ripple>
+                    <v-hover>
+                        <v-img
+                                :src="submission.thumbnail"
+                                max-width="125px"
+                                :aspect-ratio="1"
+                                slot-scope="{ hover }"
+                                style="cursor: pointer;"
+                                @click=""
+                        >
+                            <v-scale-transition>
+                                <div
+                                    v-if="hover"
+                                    class="d-flex"
+                                    style="height: 100%; "
+                                >
+                                    <v-icon x-large>photo_size_select_large</v-icon>
+                                </div>
+                            </v-scale-transition>
+                        </v-img>
+                    </v-hover>
                 </v-flex>
-                <v-flex>
-                    <v-card-title primary-title>
-                        <div>
-                            <div>Submission</div>
-                        </div>
-                    </v-card-title>
+                <v-flex xs9 sm10 lg11 v-ripple
+                        style="cursor: pointer;">
+                    <v-list three-line>
+                        <v-list-tile >
+                            <v-list-tile-content>
+                                {{ submission.title }}
+                                <v-list-tile-sub-title>
+                                    <v-layout align-start justify-start row fill-height>
+                                        <div>
+                                            <v-icon small dark>arrow_upward</v-icon>
+                                            {{ submission.score }}
+                                        </div>
+                                        <div class="mx-1"></div>
+                                        <div>
+                                            ({{ submission.domain }})
+                                        </div>
+                                    </v-layout>
+                                </v-list-tile-sub-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </v-list>
                 </v-flex>
             </v-layout>
             <v-divider light></v-divider>
-            <v-item-group class="pa-3">
-                <v-btn flat icon small>
-                    <v-icon small>thumb_up</v-icon>
+            <v-layout align-start justify-start row fill-height pa-1>
+                <v-btn flat>
+                    <v-icon left>check</v-icon>
+                    <div>Approve</div>
                 </v-btn>
-                <v-btn flat icon small>
-                    <v-icon small>thumb_up</v-icon>
+                <v-btn flat>
+                    <v-icon left>remove</v-icon>
+                    <div>Remove</div>
                 </v-btn>
-                <v-btn flat icon small>
-                    <v-icon small>thumb_up</v-icon>
+                <v-btn flat>
+                    <v-icon left>delete_sweep</v-icon>
+                    <div>Spam</div>
                 </v-btn>
-            </v-item-group>
+                <v-btn flat>
+                    <v-icon left>warning</v-icon>
+                    <div>Reports</div>
+                </v-btn>
+                <v-btn flat>
+                    <v-icon left>lock</v-icon>
+                    <div>Lock</div>
+                </v-btn>
+            </v-layout>
         </v-card>
     </v-flex>
 </template>
@@ -39,7 +80,7 @@
     export default {
         name: "ms-submission",
         props: {
-            redditSubmission: {
+            submission: {
                 type: Object,
                 required: true,
                 validator: function (value) {
