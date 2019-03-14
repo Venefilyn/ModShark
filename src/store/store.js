@@ -107,6 +107,7 @@ export default new Vuex.Store({
           throw new Error("Could not get Reddit user, aborting.")
         }
         commit("UPDATE_ACCESS_TOKEN", token);
+        commit("UPDATE_AUTHENTICATED", true);
       }
     }
   },

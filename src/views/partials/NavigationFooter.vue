@@ -89,8 +89,7 @@
         data() {
             return {
                 sheet: false,
-                bottomNavData: this.$route.name,
-                tiles: ['test', 'test2']
+                bottomNavData: this.$route.name
             }
         },
         computed: {

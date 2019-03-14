@@ -1,27 +1,16 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import Home from './views/Home.vue'
+import Vue from 'vue';
+import Router from 'vue-router';
+import Home from './views/Home.vue';
 import CenteredText from "./views/CenteredText";
 import Modqueue from "./views/Modqueue";
 import SubredditView from "./components/SubredditView";
+import RedditFactory from "./models/RedditFactory";
+import Loading from "./views/partials/Loading";
 
 Vue.use(Router);
 
 let router = new Router({
   mode: 'history',
-  beforeEach (to, from, next) 
-  {
-    if (to.matched.some(record => record.meta.requiresAuth)) {
-      let ms = JSON.parse(localStorage.getItem('ms'));
-      if (!ms['authenticated']) {
-        next({
-          path: '/'
-        });
-      }
-      // else if here that checks that Reddit singleton is set. If not, redirect to authenticating loading screen component 
-    }
-    next();
-  },
   routes: [
     {
       path: '*',
@@ -42,6 +31,12 @@ let router = new Router({
         }
         next();
       }
+    },
+    {
+      path: '/loading',
+      name: 'loading',
+      component: Loading,
+      props: true,
     },
     {
       path: '/about',
@@ -144,6 +139,33 @@ let router = new Router({
       ]
     }
   ]
+});
+
+router.beforeEach((to, from, next) => {
+  console.log("before", to.matched.some(record => record.meta.requiresAuth));
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    let ms = JSON.parse(localStorage.getItem('ms'));
+    console.log("before !ms['authenticated']", !ms['authenticated']);
+    if (!ms['authenticated']) {
+      console.log("before redirecting auth");
+      next({
+        path: "/",
+        replace: true
+      });
+    }
+    // else if here that checks that Reddit singleton is set. If not, redirect to authenticating loading screen component 
+    else if (RedditFactory.instance() === null) {
+      console.log("before redirecting load auth", to);
+      next({
+        name: "loading",
+        replace: true,
+        params: {
+          redirect: to.path
+        }
+      });
+    }
+  }
+  next();
 });
 
 
