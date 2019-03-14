@@ -2,7 +2,10 @@
     <v-container fluid pa0>
         <v-layout row wrap>
             <v-flex xs12 v-for="list in listing" :key="list.id">
-                <span>{{ list.constructor._name === "Comment" }}</span>
+                <ms-submission v-if="list.constructor._name === 'Submission'"
+                               :submission="list"
+                />
+                <div v-else>comment</div>
             </v-flex>
         </v-layout>
     </v-container>
@@ -11,9 +14,13 @@
 <script>
     import {mapState} from "vuex";
     import snoowrap from "snoowrap";
+    import MsSubmission from "../components/Submission";
 
     export default {
         name: "ms-submission-modqueue",
+        components: {
+            MsSubmission,
+        },
         data() {
             return {
                 /** @member {Array<snoowrap.objects.ReplyableContent>} */

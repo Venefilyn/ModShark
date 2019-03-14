@@ -33,8 +33,18 @@
                                 <v-list-tile-sub-title>
                                     <v-layout align-start justify-start row fill-height>
                                         <div>
-                                            <v-icon small dark>arrow_upward</v-icon>
+                                            <v-icon small>arrow_upward</v-icon>
                                             {{ submission.score }}
+                                        </div>
+                                        <div class="mx-1"></div>
+                                        <div>
+                                            <v-icon small>forum</v-icon>
+                                            {{ submission.num_comments }}
+                                        </div>
+                                        <div class="mx-1"></div>
+                                        <div>
+                                            <v-icon small>access_time</v-icon>
+                                            5h<!--TODO make 5h thing work, maybe momentjs? -->
                                         </div>
                                         <div class="mx-1"></div>
                                         <div>
@@ -49,7 +59,7 @@
             </v-layout>
             <v-divider light></v-divider>
             <v-layout align-start justify-start row fill-height pa-1>
-                <v-btn flat>
+                <v-btn flat @click="submission.approve()">
                     <v-icon left>check</v-icon>
                     <div>Approve</div>
                 </v-btn>
