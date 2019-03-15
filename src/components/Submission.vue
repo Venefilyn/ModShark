@@ -53,7 +53,7 @@
                                         <div class="mx-1"></div>
                                         <div>
                                             <v-icon small>more</v-icon>
-                                            {{ submission.subreddit }}
+                                            r/{{ submission.subreddit.display_name }}
                                         </div>
                                         <div class="mx-1"></div>
                                         <div>

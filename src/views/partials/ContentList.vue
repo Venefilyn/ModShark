@@ -1,3 +1,4 @@
+<template></template>
 <script>
     import {mapState} from "vuex";
     import * as snoowrap from "snoowrap";
@@ -11,7 +12,7 @@
             }
         },
         async mounted() {
-            this.setModqueue();
+            this.setItems();
         },
         computed: {
             ...mapState(['subreddit'])
@@ -20,6 +21,7 @@
             isSubreddit(list) {
                 return list instanceof snoowrap.objects.Subreddit
             },
+            async setItems() {}
         },
     }
 </script>

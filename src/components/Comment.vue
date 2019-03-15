@@ -26,7 +26,7 @@
                                         <div class="mx-1"></div>
                                         <div>
                                             <v-icon small>more</v-icon>
-                                            {{ comment.subreddit }}
+                                            r/{{ comment.subreddit.display_name }}
                                         </div>
                                     </v-layout>
                                 </v-list-tile-sub-title>

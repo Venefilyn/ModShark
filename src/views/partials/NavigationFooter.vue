@@ -42,13 +42,24 @@
         </v-bottom-nav>
         <v-bottom-sheet v-model="sheet" inset>
             <v-list>
-                <v-subheader>Open in</v-subheader>
+                <!--<v-subheader>Open in</v-subheader>-->
                 <v-list-tile inactive @click="sheet = false" >
                     <v-list-tile-avatar>
                         <v-icon>find_in_page</v-icon>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
                         Moderation log
+                    </v-list-tile-content>
+                    <v-list-tile-action>
+                        <v-chip disabled>Coming soon!</v-chip>
+                    </v-list-tile-action>
+                </v-list-tile>
+                <v-list-tile inactive @click="sheet = false" >
+                    <v-list-tile-avatar>
+                        <v-icon>offline_bolt</v-icon>
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                        Removal Reasons
                     </v-list-tile-content>
                     <v-list-tile-action>
                         <v-chip disabled>Coming soon!</v-chip>

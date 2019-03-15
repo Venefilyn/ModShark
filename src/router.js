@@ -6,6 +6,7 @@ import Modqueue from "./views/Modqueue";
 import SubredditView from "./components/SubredditView";
 import RedditFactory from "./models/RedditFactory";
 import Loading from "./views/partials/Loading";
+import Unmoderated from "./views/Unmoderated";
 
 Vue.use(Router);
 
@@ -73,7 +74,7 @@ let router = new Router({
         {
           path: 'unmoderated',
           name: 'subreddit_unmoderated',
-          component: Home
+          component: Unmoderated
         },
         {
           path: 'moderators',
