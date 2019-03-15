@@ -6,6 +6,7 @@ import uuid from "uuid";
 import * as api from "./api";
 import {CLIENT_ID, REDIRECT_URL, USER_AGENT} from "../models/RedditFactory";
 import RedditFactory from "../models/RedditFactory";
+import MsNotification from "../models/Notification";
 
 Vue.use(Vuex);
 Vue.use(vuejsStorage);
@@ -24,6 +25,7 @@ export default new Vuex.Store({
     storeLocally: false,
     localAccessToken: "",
     subreddit: "mod",
+    notifications: [],
   },
   mutations: {
     UPDATE_ACCESS_TOKEN(state, token) {
@@ -55,6 +57,9 @@ export default new Vuex.Store({
     },
     UPDATE_SELECTED_SUBREDDIT_OBJECT(state, r) {
       state.subreddit = r.getSubreddit(state.subreddit);
+    },
+    ADD_NOTIFICATION(state, notification) {
+      state.notifications.push(notification)
     }
   },
   actions: {
@@ -74,6 +79,12 @@ export default new Vuex.Store({
     },
     changeStoreLocally({ commit }, value) {
       commit("UPDATE_STORE_LOCALLY", value)
+    },
+    addNotification({ commit }, notification) {
+      if (!(notification instanceof MsNotification)) {
+        console.warn('Notification is not a MsNotification object', notification);
+      }
+      commit("ADD_NOTIFICATION", notification)
     },
     logOut({ commit }) {
       commit("UPDATE_ACCESS_TOKEN", "");

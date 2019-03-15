@@ -3,7 +3,6 @@
 </template>
 
 <script>
-    import snoowrap from "snoowrap";
     import ContentList from "./partials/ContentList";
     import MsContentListQueue from "./partials/ContentListQueue";
 
@@ -15,7 +14,7 @@
         },
         methods: {
             async setItems() {
-                this.listing = await this.subreddit.getModqueue();
+                this.listing = await this.subreddit.getUnmoderated();
             }
         },
     }

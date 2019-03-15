@@ -2,48 +2,22 @@
     <v-flex xs12>
         <!--reports popup-->
         <div v-if="showReports"></div>
-        <!--submission card-->
+        <!--comment card-->
         <v-card>
             <v-layout>
                 <v-flex xs3 sm2 lg1 v-ripple>
-                    <v-hover>
-                        <v-img
-                                :src="submission.thumbnail"
-                                max-width="125px"
-                                :aspect-ratio="1"
-                                slot-scope="{ hover }"
-                                style="cursor: pointer;"
-                                @click=""
-                        >
-                            <v-scale-transition>
-                                <div
-                                    v-if="hover"
-                                    class="d-flex"
-                                    style="height: 100%; "
-                                >
-                                    <v-icon x-large>photo_size_select_large</v-icon>
-                                </div>
-                            </v-scale-transition>
-                        </v-img>
-                    </v-hover>
-                </v-flex>
                 <v-flex xs9 sm10 lg11 v-ripple
                         style="cursor: pointer;">
                     <v-list three-line>
                         <v-list-tile >
                             <v-list-tile-content>
-                                {{ submission.title }}
+                                {{ comment.content.substring(0, 250) }}
                                 <!--Post metadata-->
                                 <v-list-tile-sub-title>
                                     <v-layout align-start justify-start row fill-height>
                                         <div>
                                             <v-icon small>arrow_upward</v-icon>
-                                            {{ submission.score }}
-                                        </div>
-                                        <div class="mx-1"></div>
-                                        <div>
-                                            <v-icon small>forum</v-icon>
-                                            {{ submission.num_comments }}
+                                            {{ comment.score }}
                                         </div>
                                         <div class="mx-1"></div>
                                         <div>
@@ -53,11 +27,7 @@
                                         <div class="mx-1"></div>
                                         <div>
                                             <v-icon small>more</v-icon>
-                                            {{ submission.subreddit }}
-                                        </div>
-                                        <div class="mx-1"></div>
-                                        <div>
-                                            ({{ submission.domain }})
+                                            {{ comment.subreddit }}
                                         </div>
                                     </v-layout>
                                 </v-list-tile-sub-title>
@@ -68,9 +38,8 @@
             </v-layout>
             <v-divider light></v-divider>
             <!--Moderation buttons-->
-            <!--Todo: Move to ContentModerationButtons component, show/hide actions depending on type -->
             <v-layout align-start justify-start row fill-height pa-1>
-                <v-btn flat @click="submissionAction(submission.approve, 'Post has been approved!', 'There was an error approving the post.')">
+                <v-btn flat @click="commentAction(comment.approve, 'Post has been approved!', 'There was an error approving the post.')">
                     <v-icon left>check</v-icon>
                     <div>Approve</div>
                 </v-btn>
@@ -78,7 +47,7 @@
                     <v-icon left>remove</v-icon>
                     <div>Remove</div>
                 </v-btn>
-                <v-btn flat @click="submissionAction(() => submission.remove({spam: true}), 'Post marked as spam!', 'There was an error removing the post.')">
+                <v-btn flat @click="commentAction(() => comment.remove({spam: true}), 'Post marked as spam!', 'There was an error removing the post.')">
                     <v-icon left>delete_sweep</v-icon>
                     <div>Spam</div>
                 </v-btn>
@@ -86,7 +55,7 @@
                     <v-icon left>warning</v-icon>
                     <div>Reports</div>
                 </v-btn>
-                <v-btn flat @click="submissionAction(submission.lock, 'Post has been locked!', 'There was an error locking the post.')">
+                <v-btn flat @click="commentAction(comment.lock, 'Post has been locked!', 'There was an error locking the post.')">
                     <v-icon left>lock</v-icon>
                     <div>Lock</div>
                 </v-btn>
@@ -104,14 +73,14 @@
     import MsNotification from "../models/Notification";
 
     export default {
-        name: "ms-submission",
+        name: "ms-comment",
         props: {
-            submission: {
+            comment: {
                 type: Object,
                 required: true,
                 validator: function (value) {
-                    return value instanceof snoowrap.objects.Submission; 
-                } 
+                    return value instanceof snoowrap.objects.Comment;
+                }
             }
         },
         data() {
@@ -127,7 +96,7 @@
              * @param {string} successMessage
              * @param {string} errorMessage
              */
-            async submissionAction(closure, successMessage, errorMessage) {
+            async commentAction(closure, successMessage, errorMessage) {
                 /** @member {MsNotification} */
                 let notification;
                 try {
