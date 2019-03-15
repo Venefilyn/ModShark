@@ -1,5 +1,21 @@
 <template>
     <v-app dark>
+        <div v-for="(notification, i) in notifications" :key="i">
+            <v-snackbar
+                    :value="notification"
+                    top
+                    @input="removeNotification(i)"
+            >
+                {{ notification.message }}
+                <v-btn
+                        color="pink"
+                        flat
+                        @click="removeNotification(i)"
+                >
+                    Close
+                </v-btn>
+            </v-snackbar>
+        </div>
         <v-expand-transition>
             <ms-main-toolbar v-if="isAuthenticated"/>
         </v-expand-transition>
@@ -53,13 +69,13 @@
             }
         },
         computed: {
-            ...mapState(['accessToken', 'storeLocally', 'localAccessToken']),
+            ...mapState(['accessToken', 'storeLocally', 'localAccessToken', 'notifications']),
             isAuthenticated() {
                 return this.accessToken.length > 0;
             }
         },
         methods: {
-            ...mapActions(['changeStoreLocally']),
+            ...mapActions(['changeStoreLocally', 'removeNotification']),
         },
     }
 </script>

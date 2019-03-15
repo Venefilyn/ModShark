@@ -1,4 +1,3 @@
-<template></template>
 <script>
     import {mapState} from "vuex";
     import * as snoowrap from "snoowrap";
@@ -8,11 +7,16 @@
         data() {
             return {
                 /** @member {Array<snoowrap.objects.ReplyableContent>} */
-                listing: []
+                listing: [],
+                error: ""
             }
         },
         async mounted() {
-            this.setItems();
+            try {
+                await this.setItems();
+            } catch (e) {
+                this.error = "Could not get items" + e.message
+            }
         },
         computed: {
             ...mapState(['subreddit'])
@@ -23,6 +27,9 @@
             },
             async setItems() {}
         },
+        render() {
+            return {}
+        }
     }
 </script>
 

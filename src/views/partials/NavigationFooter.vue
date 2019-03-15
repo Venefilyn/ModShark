@@ -59,7 +59,7 @@
                         <v-icon>offline_bolt</v-icon>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                        Removal Reasons
+                        Edit Removal Reasons
                     </v-list-tile-content>
                     <v-list-tile-action>
                         <v-chip disabled>Coming soon!</v-chip>

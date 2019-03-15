@@ -1,5 +1,8 @@
 <template>
-    <ms-content-list-queue :listing="listing"></ms-content-list-queue>
+    <div>
+        <ms-content-list-queue :listing="listing"></ms-content-list-queue>
+        {{ this.error }}
+    </div>
 </template>
 
 <script>

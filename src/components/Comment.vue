@@ -2,12 +2,12 @@
     <!--comment card-->
     <v-card>
         <v-layout>
-            <v-flex xs9 sm10 lg11 v-ripple
+            <v-flex xs12 v-ripple
                     style="cursor: pointer;">
                 <v-list three-line>
                     <v-list-tile >
                         <v-list-tile-content>
-                            {{ comment.content.substring(0, 250) }}
+                            <span v-html="comment.body_html.substring(0, 150)"></span>
                             <!--Post metadata-->
                             <v-list-tile-sub-title>
                                 <v-layout align-start justify-start row fill-height>

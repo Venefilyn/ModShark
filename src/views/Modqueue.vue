@@ -1,9 +1,11 @@
 <template>
-    <ms-content-list-queue :listing="listing"></ms-content-list-queue>
+    <div>
+        <ms-content-list-queue :listing="listing"></ms-content-list-queue>
+        {{ this.error }}
+    </div>
 </template>
 
 <script>
-    import snoowrap from "snoowrap";
     import ContentList from "./partials/ContentList";
     import MsContentListQueue from "./partials/ContentListQueue";
 

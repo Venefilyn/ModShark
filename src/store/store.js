@@ -60,6 +60,9 @@ export default new Vuex.Store({
     },
     ADD_NOTIFICATION(state, notification) {
       state.notifications.push(notification)
+    },
+    REMOVE_NOTIFICATION(state, index) {
+      state.notifications.splice(index, 1);
     }
   },
   actions: {
@@ -79,6 +82,9 @@ export default new Vuex.Store({
     },
     changeStoreLocally({ commit }, value) {
       commit("UPDATE_STORE_LOCALLY", value)
+    },
+    removeNotification({ commit }, index) {
+      commit("REMOVE_NOTIFICATION", index)
     },
     addNotification({ commit }, notification) {
       if (!(notification instanceof MsNotification)) {
