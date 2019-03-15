@@ -21,7 +21,7 @@
             <v-list-tile
                     v-for="subreddit in subredditList"
                     :key="subreddit.name"
-                    @click="changeSubreddit(subreddit.display_name)"
+                    @click="changeSubreddit(subreddit)"
             >
                 <v-list-tile-content>
                     <v-list-tile-title>r/{{ subreddit.display_name }}</v-list-tile-title>

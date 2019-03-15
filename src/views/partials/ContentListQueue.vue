@@ -1,7 +1,7 @@
 <template>
     <v-container fluid pa0>
         <v-layout row wrap>
-            <v-flex xs12 v-for="list in listing" :key="list.id" pb2>
+            <v-flex xs12 v-for="list in listing" :key="list.id">
                 <ms-submission v-if="list.constructor._name === 'Submission'"
                               :submission="list"></ms-submission>
                 <ms-comment v-else :comment="list"></ms-comment>
