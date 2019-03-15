@@ -5,7 +5,6 @@
         <!--comment card-->
         <v-card>
             <v-layout>
-                <v-flex xs3 sm2 lg1 v-ripple>
                 <v-flex xs9 sm10 lg11 v-ripple
                         style="cursor: pointer;">
                     <v-list three-line>

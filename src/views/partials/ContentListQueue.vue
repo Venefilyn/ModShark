@@ -11,8 +11,15 @@
 </template>
 
 <script>
+    import MsSubmission from "../../components/Submission";
+    import MsComment from "../../components/Comment";
+    
     export default {
         name: "ms-content-list-queue",
+        components: {
+            MsSubmission,
+            MsComment,
+        },
         props: {
             listing: {
                 type: Object,

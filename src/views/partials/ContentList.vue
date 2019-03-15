@@ -1,15 +1,9 @@
 <script>
-    import MsSubmission from "../components/Submission";
-    import MsComment from "../components/Comment";
     import {mapState} from "vuex";
     import * as snoowrap from "snoowrap";
     
     export default {
         name: "ms-content-list",
-        components: {
-            MsSubmission,
-            MsComment,
-        },
         data() {
             return {
                 /** @member {Array<snoowrap.objects.ReplyableContent>} */
