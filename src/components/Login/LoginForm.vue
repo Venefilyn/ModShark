@@ -73,7 +73,6 @@
                 const url = snoowrap.getAuthUrl({
                     clientId: this.$store.state.clientId,
                     redirectUri: this.$store.state.redirectUrl,
-                    permanent: process.env.NODE_ENV === "production",
                     state: this.$store.state.state,
                     scope: [
                         'modmail',
@@ -141,11 +140,11 @@
                         throw new Error("Could not get Reddit user, aborting.")
                     }
                     if (!this.storeLocally) {
-                        await this.updateServerAuth(r.accessToken);
+                        await this.updateServerAuth(r.refreshToken, r.accessToken);
                     }
 
                     this.$emit("authenticating", false);
-                    this.$store.dispatch("updateAccessToken", r.accessToken);
+                    this.$store.dispatch("updateRefreshToken", r.refreshToken);
                     
                     // Redirect to main view
                     this.$router.push({name: 'subreddit_modqueue', params: {subreddit: "mod"}});
@@ -165,10 +164,11 @@
                     redirectUri: this.$store.state.redirectUrl
                 })
             },
-            async updateServerAuth(accessToken) {
+            async updateServerAuth(refreshToken, accessToken) {
                 try {
                     await axios.post("/api/authenticate", {
-                        "Token": accessToken
+                        "RefreshToken": refreshToken,
+                        "AccessToken": accessToken,
                     }, {
                         headers: {
                             'content-type': 'application/json;charset=utf-8'
@@ -181,7 +181,7 @@
                         // Retry once a second
                         let promise = new Promise(resolve => setTimeout(resolve, 1000));
                         await promise;
-                        await this.updateServerAuth(accessToken)
+                        await this.updateServerAuth(refreshToken, accessToken)
                     }
                     else {
                         this.serverFaultDialog = true;

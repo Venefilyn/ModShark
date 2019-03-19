@@ -52,8 +52,8 @@
         async mounted() {
             // If used stores locally, update access token
             if (this.storeLocally) {
-                if (this.localAccessToken.length > 0) {
-                    this.$store.dispatch("updateAccessToken", this.localAccessToken);
+                if (this.localRefreshToken.length > 0) {
+                    this.$store.dispatch("updateRefreshToken", this.localRefreshToken);
                 }
                 else {
                     this.changeStoreLocally(false)
@@ -69,9 +69,9 @@
             }
         },
         computed: {
-            ...mapState(['accessToken', 'storeLocally', 'localAccessToken', 'notifications']),
+            ...mapState(['refreshToken', 'storeLocally', 'localRefreshToken', 'notifications']),
             isAuthenticated() {
-                return this.accessToken.length > 0;
+                return this.refreshToken.length > 0;
             }
         },
         methods: {

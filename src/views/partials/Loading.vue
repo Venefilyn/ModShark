@@ -17,6 +17,11 @@
         components: {
             CenteredText,
         },
+        data() {
+            return {
+                logOutTimeout: null
+            }
+        },
         props: {
             redirect: {
                 type: String,
@@ -24,11 +29,15 @@
                 default: '/'
             },
         },
+        mounted() {
+            this.logOutTimeout = setTimeout(this.logOutUser, 1000*60*6); // 6s timeout
+            console.log("setting timeout", this.logOutTimeout)
+        },
         computed: {
-            ...mapState(['accessToken'])
+            ...mapState(['refreshToken'])
         },
         watch: {
-            accessToken(newValue) {
+            refreshToken(newValue) {
                 if (newValue.length > 0) {
                     this.redirectUser();
                 }
@@ -36,8 +45,14 @@
         },
         methods: {
             redirectUser() {
+                clearTimeout(this.logOutTimeout);
                 console.log("Redirecting to ", this.redirect, this.$route.props, this.$route.params);
                 this.$router.replace(this.redirect)
+            },
+            logOutUser() {
+                console.log("logging user out");
+                this.$store.dispatch("logOut");
+                this.$router.replace('/')
             }
         },
     }

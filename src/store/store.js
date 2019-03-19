@@ -13,7 +13,8 @@ Vue.use(vuejsStorage);
 
 export default new Vuex.Store({
   state: {
-    accessToken: "",
+    refreshToken: "",
+    localRefreshToken: "",
     state: uuid.v4(),
     clientId: CLIENT_ID,
     redirectUrl: REDIRECT_URL,
@@ -23,19 +24,18 @@ export default new Vuex.Store({
     authenticated: false,
     settings: {},
     storeLocally: false,
-    localAccessToken: "",
     subreddit: "mod",
     notifications: [],
   },
   mutations: {
-    UPDATE_ACCESS_TOKEN(state, token) {
-      state.accessToken = token;
+    UPDATE_REFRESH_TOKEN(state, token) {
+      state.refreshToken = token;
       if (state.storeLocally) {
-        state.localAccessToken = token;
+        state.localRefreshToken = token;
       }
     },
     UPDATE_LOCAL_TOKEN(state) {
-      state.localAccessToken = state.accessToken;
+      state.localRefreshToken = state.refreshToken;
     },
     UPDATE_SUBREDDITS_DRAWER(state, value) {
       state.drawerSubreddits = value;
@@ -70,8 +70,8 @@ export default new Vuex.Store({
       commit("UPDATE_STORE_LOCALLY", true);
       commit("UPDATE_LOCAL_TOKEN");
     },
-    updateAccessToken({ commit }, token) {
-      commit("UPDATE_ACCESS_TOKEN", token);
+    updateRefreshToken({ commit }, token) {
+      commit("UPDATE_REFRESH_TOKEN", token);
       commit("UPDATE_AUTHENTICATED", true);
     },
     updateSubredditsDrawer({ commit }, value) {
@@ -93,7 +93,7 @@ export default new Vuex.Store({
       commit("ADD_NOTIFICATION", notification)
     },
     logOut({ commit }) {
-      commit("UPDATE_ACCESS_TOKEN", "");
+      commit("UPDATE_REFRESH_TOKEN", "");
       commit("UPDATE_LOCAL_TOKEN");
       commit("UPDATE_STORE_LOCALLY", false);
       commit("CHANGE_SETTINGS", {});
@@ -109,13 +109,17 @@ export default new Vuex.Store({
      */
     async authenticateFromServer({ commit }) {
       let token = await api.getToken();
+      console.log("token", token);
       if (token) {
-        
+        console.log("Creating snoowrap");
         let r = new snoowrap({
-          accessToken: token,
+          refreshToken: token,
           clientId: CLIENT_ID,
-          userAgent: USER_AGENT
+          clientSecret: "",
+          userAgent: USER_AGENT,
+          redirectUrl: REDIRECT_URL
         });
+        console.log("r", r);
         RedditFactory.setReddit(r);
         let me = await r.getMe();
         commit("UPDATE_SELECTED_SUBREDDIT_OBJECT", r);
@@ -123,7 +127,7 @@ export default new Vuex.Store({
         if (!(me instanceof snoowrap.objects.RedditUser)) {
           throw new Error("Could not get Reddit user, aborting.")
         }
-        commit("UPDATE_ACCESS_TOKEN", token);
+        commit("UPDATE_REFRESH_TOKEN", token);
         commit("UPDATE_AUTHENTICATED", true);
       }
     }
@@ -135,7 +139,7 @@ export default new Vuex.Store({
   },
   plugins: [
     vuejsStorage({
-      keys: ['authenticated', 'settings', 'storeLocally', 'localAccessToken'],
+      keys: ['authenticated', 'settings', 'storeLocally', 'localRefreshToken'],
       namespace: 'ms',
     })
   ]
