@@ -8,7 +8,7 @@
                     <v-list-tile >
                         <v-list-tile-content>
                             <span v-html="comment.body_html.substring(0, 150)"></span>
-                            <!--Post metadata-->
+                            <!--Comment metadata-->
                             <v-list-tile-sub-title>
                                 <v-layout align-start justify-start row fill-height>
                                     <div>
@@ -18,7 +18,7 @@
                                     <div class="mx-1"></div>
                                     <div>
                                         <v-icon small>access_time</v-icon>
-                                        5h<!--TODO make 5h thing work, maybe momentjs? -->
+                                        {{ moment.unix(comment.created_utc).fromNow() }}
                                     </div>
                                     <div class="mx-1"></div>
                                     <div>
@@ -35,7 +35,7 @@
         <v-divider light></v-divider>
         <!--Moderation buttons-->
         <v-layout align-start justify-start row fill-height pa-1>
-            <v-btn flat @click="submissionAction(() => submission.approve(), 'Post has been approved!', 'There was an error approving the post.')">
+            <v-btn flat @click="commentAction(() => comment.approve(), 'Comment has been approved!', 'There was an error approving the comment.')">
                 <v-icon left>check</v-icon>
                 <div>Approve</div>
             </v-btn>
@@ -43,17 +43,13 @@
                 <v-icon left>remove</v-icon>
                 <div>Remove</div>
             </v-btn>
-            <v-btn flat @click="submissionAction(() => submission.remove({spam: true}), 'Post marked as spam!', 'There was an error removing the post.')">
+            <v-btn flat @click="commentAction(() => comment.remove({spam: true}), 'Comment marked as spam!', 'There was an error removing the comment.')">
                 <v-icon left>delete_sweep</v-icon>
                 <div>Spam</div>
             </v-btn>
             <v-btn flat @click="showReports = true">
                 <v-icon left>warning</v-icon>
                 <div>Reports</div>
-            </v-btn>
-            <v-btn flat @click="submissionAction(() => submission.lock(), 'Post has been locked!', 'There was an error locking the post.')">
-                <v-icon left>lock</v-icon>
-                <div>Lock</div>
             </v-btn>
             <v-btn flat>
                 <v-icon left>more_vert</v-icon>
@@ -86,7 +82,7 @@
         },
         methods: {
             /**
-             * TODO: Move to mixin as it's dupe in comment and submission
+             * TODO: Move to mixin as it's dupe in comment and comment
              * @param {function} closure
              * @param {string} successMessage
              * @param {string} errorMessage

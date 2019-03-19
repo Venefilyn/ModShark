@@ -14,6 +14,7 @@
                             :src="submission.thumbnail"
                             :aspect-ratio="1"
                             slot-scope="{ hover }"
+                            contain
                             @click=""
                     >
                         <v-scale-transition>
@@ -48,7 +49,7 @@
                                     <div class="mx-1"></div>
                                     <div>
                                         <v-icon small>access_time</v-icon>
-                                        5h<!--TODO make 5h thing work, maybe momentjs? -->
+                                        {{ moment.unix(submission.created_utc).fromNow() }}
                                     </div>
                                     <div class="mx-1"></div>
                                     <div>
