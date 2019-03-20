@@ -53,7 +53,8 @@ export default new Vuex.Store({
       state.settings = value;
     },
     UPDATE_SELECTED_SUBREDDIT(state, value) {
-      state.subreddit = value;
+      let r = RedditFactory.instance();
+      state.subreddit = (r instanceof snoowrap) ? r.getSubreddit(value) : value;
     },
     UPDATE_SELECTED_SUBREDDIT_OBJECT(state, r) {
       state.subreddit = r.getSubreddit(state.subreddit);

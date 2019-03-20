@@ -4,8 +4,11 @@
     fixed
     app
   >
-    <v-toolbar flat>
-      Subreddits
+    <v-toolbar 
+      flat
+      extended
+    >
+      Subreddits; Username and avatar
     </v-toolbar>
 
     <v-divider />
@@ -22,7 +25,7 @@
       <v-list-tile
         v-for="subreddit in subredditList"
         :key="subreddit.name"
-        @click="changeSubreddit(subreddit)"
+        @click="changeSubreddit(subreddit.display_name)"
       >
         <v-list-tile-content>
           <v-list-tile-title>r/{{ subreddit.display_name }}</v-list-tile-title>
@@ -77,7 +80,7 @@ export default {
     },
     changeSubreddit(subreddit) {
       this.updateSelectedSubreddit(subreddit);
-      this.$router.push({ name: 'subreddit_modqueue', params: {subreddit: subreddit}})
+      this.$router.push({params: {subreddit: subreddit}})
     },
   },
 }

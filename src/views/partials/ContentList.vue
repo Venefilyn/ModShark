@@ -14,6 +14,17 @@ export default {
   computed: {
     ...mapState(['subreddit'])
   },
+  watch: {
+    async subreddit(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        try {
+          await this.setItems();
+        } catch (e) {
+          this.error = 'Could not get items ' + e.message
+        }
+      }
+    }
+  },
   async mounted() {
     try {
       await this.setItems();
