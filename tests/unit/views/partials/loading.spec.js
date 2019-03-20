@@ -1,11 +1,12 @@
-import {expect} from 'chai'
 import sinon from 'sinon'
 import {shallowMount} from '@vue/test-utils'
 import Loading from '@/views/partials/Loading';
 import Vue from 'vue'
 import Vuex from 'vuex'
+import Vuetify from "vuetify";
 
 let localVue = Vue.use(Vuex);
+localVue.use(Vuetify);
 
 describe('Loading.vue', function () {
     let wrapper;
@@ -17,11 +18,11 @@ describe('Loading.vue', function () {
     let $router;
     let clock;
     
-    before(function () {
+    beforeAll(function () {
         clock = sinon.useFakeTimers();
     });
 
-    after(function () {
+    afterAll(function () {
         clock.restore();
     });
     
@@ -55,13 +56,12 @@ describe('Loading.vue', function () {
     describe('UI', () => {
         it('has a CenteredText component with text "Loading ModShark"', function () {
             let centeredText = wrapper.find('centered-text-stub');
-            console.log(wrapper.html());
-            expect(centeredText.exists()).to.be.true;
-            expect(centeredText.attributes().text).to.equal("Loading ModShark");
+            expect(centeredText.exists()).toBeTruthy();
+            expect(centeredText.attributes().text).toEqual("Loading ModShark");
         });
         it('should redirect to home if refreshToken changes', function () {
             state.refreshToken = "new value";
-            expect($router.replace.calledWith("/")).to.be.true;
+            expect($router.replace.calledWith("/")).toBeTruthy();
         });
     })
 });
