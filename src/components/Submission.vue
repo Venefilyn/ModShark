@@ -43,6 +43,11 @@
                                     </div>
                                     <div class="mx-1"></div>
                                     <div>
+                                        <v-icon small>person</v-icon>
+                                        u/{{ submission.author.name }}
+                                    </div>
+                                    <div class="mx-1"></div>
+                                    <div>
                                         <v-icon small>forum</v-icon>
                                         {{ submission.num_comments }}
                                     </div>
