@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './views/Home.vue';
-import CenteredText from "./views/CenteredText";
-import Modqueue from "./views/Modqueue";
-import SubredditView from "./components/SubredditView";
-import RedditFactory from "./models/RedditFactory";
-import Loading from "./views/partials/Loading";
-import Unmoderated from "./views/Unmoderated";
+import CenteredText from './views/CenteredText';
+import Modqueue from './views/Modqueue';
+import SubredditView from './components/SubredditView';
+import RedditFactory from './models/RedditFactory';
+import Loading from './views/partials/Loading';
+import Unmoderated from './views/Unmoderated';
 
 Vue.use(Router);
 
@@ -18,7 +18,7 @@ let router = new Router({
       name: 'any',
       component: CenteredText,
       props: {
-        text: "Could not find anything!"
+        text: 'Could not find anything!'
       }
     },
     {
@@ -28,7 +28,7 @@ let router = new Router({
       beforeEnter: (to, from, next) => {
         let ms = JSON.parse(localStorage.getItem('ms'));
         if (ms['authenticated']) {
-          next({name: 'subreddit_modqueue', params: {subreddit: "mod"}});
+          next({name: 'subreddit_modqueue', params: {subreddit: 'mod'}});
         }
         next();
       }
@@ -88,7 +88,7 @@ let router = new Router({
           children: [
             { 
               path: 'comment/:comment_id', 
-              name: "subreddit_comment", 
+              name: 'subreddit_comment', 
               component: Home
             }
           ]
@@ -143,22 +143,18 @@ let router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-  console.log("before", to.matched.some(record => record.meta.requiresAuth));
   if (to.matched.some(record => record.meta.requiresAuth)) {
     let ms = JSON.parse(localStorage.getItem('ms'));
-    console.log("before !ms['authenticated']", !ms['authenticated']);
     if (!ms['authenticated']) {
-      console.log("before redirecting auth");
       next({
-        path: "/",
+        path: '/',
         replace: true
       });
     }
     // else if here that checks that Reddit singleton is set. If not, redirect to authenticating loading screen component 
     else if (RedditFactory.instance() === null) {
-      console.log("before redirecting load auth", to);
       next({
-        name: "loading",
+        name: 'loading',
         replace: true,
         params: {
           redirect: to.path

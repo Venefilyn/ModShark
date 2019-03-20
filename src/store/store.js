@@ -1,20 +1,20 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import vuejsStorage from "vuejs-storage";
-import * as snoowrap from "snoowrap";
-import uuid from "uuid";
-import * as api from "./api";
-import {CLIENT_ID, REDIRECT_URL, USER_AGENT} from "../models/RedditFactory";
-import RedditFactory from "../models/RedditFactory";
-import MsNotification from "../models/Notification";
+import vuejsStorage from 'vuejs-storage';
+import * as snoowrap from 'snoowrap';
+import uuid from 'uuid';
+import * as api from './api';
+import {CLIENT_ID, REDIRECT_URL, USER_AGENT} from '../models/RedditFactory';
+import RedditFactory from '../models/RedditFactory';
+import MsNotification from '../models/Notification';
 
 Vue.use(Vuex);
 Vue.use(vuejsStorage);
 
 export default new Vuex.Store({
   state: {
-    refreshToken: "",
-    localRefreshToken: "",
+    refreshToken: '',
+    localRefreshToken: '',
     state: uuid.v4(),
     clientId: CLIENT_ID,
     redirectUrl: REDIRECT_URL,
@@ -24,7 +24,7 @@ export default new Vuex.Store({
     authenticated: false,
     settings: {},
     storeLocally: false,
-    subreddit: "mod",
+    subreddit: 'mod',
     notifications: [],
   },
   mutations: {
@@ -67,40 +67,40 @@ export default new Vuex.Store({
   },
   actions: {
     switchToLocal({ commit }) {
-      commit("UPDATE_STORE_LOCALLY", true);
-      commit("UPDATE_LOCAL_TOKEN");
+      commit('UPDATE_STORE_LOCALLY', true);
+      commit('UPDATE_LOCAL_TOKEN');
     },
     updateRefreshToken({ commit }, token) {
-      commit("UPDATE_REFRESH_TOKEN", token);
-      commit("UPDATE_AUTHENTICATED", true);
+      commit('UPDATE_REFRESH_TOKEN', token);
+      commit('UPDATE_AUTHENTICATED', true);
     },
     updateSubredditsDrawer({ commit }, value) {
-      commit("UPDATE_SUBREDDITS_DRAWER", value);
+      commit('UPDATE_SUBREDDITS_DRAWER', value);
     },
     updateSettingsDrawer({ commit }, value) {
-      commit("UPDATE_SETTINGS_DRAWER", value);
+      commit('UPDATE_SETTINGS_DRAWER', value);
     },
     changeStoreLocally({ commit }, value) {
-      commit("UPDATE_STORE_LOCALLY", value)
+      commit('UPDATE_STORE_LOCALLY', value)
     },
     removeNotification({ commit }, index) {
-      commit("REMOVE_NOTIFICATION", index)
+      commit('REMOVE_NOTIFICATION', index)
     },
     addNotification({ commit }, notification) {
       if (!(notification instanceof MsNotification)) {
-        console.warn('Notification is not a MsNotification object', notification);
+        throw TypeError('Notification is not a MsNotification object');
       }
-      commit("ADD_NOTIFICATION", notification)
+      commit('ADD_NOTIFICATION', notification)
     },
     logOut({ commit }) {
-      commit("UPDATE_REFRESH_TOKEN", "");
-      commit("UPDATE_LOCAL_TOKEN");
-      commit("UPDATE_STORE_LOCALLY", false);
-      commit("CHANGE_SETTINGS", {});
-      commit("UPDATE_AUTHENTICATED", false);
+      commit('UPDATE_REFRESH_TOKEN', '');
+      commit('UPDATE_LOCAL_TOKEN');
+      commit('UPDATE_STORE_LOCALLY', false);
+      commit('CHANGE_SETTINGS', {});
+      commit('UPDATE_AUTHENTICATED', false);
     },
     updateSelectedSubreddit({ commit }, subreddit) {
-      commit("UPDATE_SELECTED_SUBREDDIT", subreddit);
+      commit('UPDATE_SELECTED_SUBREDDIT', subreddit);
     },
     /**
      * @param commit
@@ -109,26 +109,23 @@ export default new Vuex.Store({
      */
     async authenticateFromServer({ commit }) {
       let token = await api.getToken();
-      console.log("token", token);
       if (token) {
-        console.log("Creating snoowrap");
         let r = new snoowrap({
           refreshToken: token,
           clientId: CLIENT_ID,
-          clientSecret: "",
+          clientSecret: '',
           userAgent: USER_AGENT,
           redirectUrl: REDIRECT_URL
         });
-        console.log("r", r);
         RedditFactory.setReddit(r);
         let me = await r.getMe();
-        commit("UPDATE_SELECTED_SUBREDDIT_OBJECT", r);
+        commit('UPDATE_SELECTED_SUBREDDIT_OBJECT', r);
 
         if (!(me instanceof snoowrap.objects.RedditUser)) {
-          throw new Error("Could not get Reddit user, aborting.")
+          throw new Error('Could not get Reddit user, aborting.')
         }
-        commit("UPDATE_REFRESH_TOKEN", token);
-        commit("UPDATE_AUTHENTICATED", true);
+        commit('UPDATE_REFRESH_TOKEN', token);
+        commit('UPDATE_AUTHENTICATED', true);
       }
     }
   },

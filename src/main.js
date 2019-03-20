@@ -4,11 +4,12 @@ import App from './App.vue'
 import router from './router'
 import store from './store/store'
 import './registerServiceWorker'
-import moment from "moment";
+import moment from 'moment';
+import VueSimpleMarkdown from 'vue-simple-markdown'
 
 Vue.config.productionTip = false;
 
-
+Vue.use(VueSimpleMarkdown);
 Vue.prototype.moment = moment;
 
 new Vue({

@@ -1,26 +1,26 @@
 <template>
-    <div>
-        <ms-content-list-queue :listing="listing"></ms-content-list-queue>
-        {{ this.error }}
-    </div>
+  <div>
+    <ms-content-list-queue :listing="listing" />
+    {{ error }}
+  </div>
 </template>
 
 <script>
-    import ContentList from "./partials/ContentList";
-    import MsContentListQueue from "./partials/ContentListQueue";
+import ContentList from './partials/ContentList';
+import MsContentListQueue from './partials/ContentListQueue';
 
-    export default {
-        name: "ms-submission-modqueue",
-        mixins: [ContentList],
-        components: {
-            MsContentListQueue,
-        },
-        methods: {
-            async setItems() {
-                this.listing = await this.subreddit.getModqueue();
-            }
-        },
+export default {
+  name: 'MsSubmissionModqueue',
+  components: {
+    MsContentListQueue,
+  },
+  mixins: [ContentList],
+  methods: {
+    async setItems() {
+      this.listing = await this.subreddit.getModqueue();
     }
+  },
+}
 </script>
 
 <style scoped>
