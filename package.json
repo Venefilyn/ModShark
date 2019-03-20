@@ -41,6 +41,7 @@
     "vue-cli-plugin-vuetify": "^0.4.6",
     "vue-template-compiler": "^2.5.21",
     "vuetify-loader": "^1.0.5",
-    "webpack-hot-middleware": "^2.24.3"
+    "webpack-hot-middleware": "^2.24.3",
+    "sinon": "v7.2.7"
   }
 }

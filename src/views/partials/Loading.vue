@@ -31,7 +31,6 @@
         },
         mounted() {
             this.logOutTimeout = setTimeout(this.logOutUser, 1000*60*6); // 6s timeout
-            console.log("setting timeout", this.logOutTimeout)
         },
         computed: {
             ...mapState(['refreshToken'])
@@ -46,7 +45,6 @@
         methods: {
             redirectUser() {
                 clearTimeout(this.logOutTimeout);
-                console.log("Redirecting to ", this.redirect, this.$route.props, this.$route.params);
                 this.$router.replace(this.redirect)
             },
             logOutUser() {
