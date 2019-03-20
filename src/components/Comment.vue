@@ -10,7 +10,7 @@
         <v-card flat>
           <v-card-title primary-title>
             <div>
-              <vue-simple-markdown :source="comment.body_html.substring(0, 150)" />
+              <vue-simple-markdown :source="comment.body" />
             </div>
             <div>
               <v-layout

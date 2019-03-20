@@ -10,7 +10,7 @@ import ContentList from './partials/ContentList';
 import MsContentListQueue from './partials/ContentListQueue';
 
 export default {
-  name: 'MsSubmissionModqueue',
+  name: 'MsSubredditModqueue',
   components: {
     MsContentListQueue,
   },

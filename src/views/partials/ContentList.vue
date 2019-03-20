@@ -18,7 +18,7 @@ export default {
     try {
       await this.setItems();
     } catch (e) {
-      this.error = 'Could not get items' + e.message
+      this.error = 'Could not get items ' + e.message
     }
   },
   methods: {
