@@ -1,4 +1,4 @@
-import {shallowMount} from '@vue/test-utils';
+import {mount, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import MainToolbar from '@/views/partials/MainToolbar';
@@ -73,14 +73,18 @@ describe('MainToolbar', function () {
   });
 
   it('dispatches updateSubredditsDrawer when clicking on v-toolbar-side-icon', function () {
-    let icon = wrapper.find('v-toolbar-side-icon-stub');
-    icon.trigger('click');
-    expect(actions.updateSubredditsDrawer).toHaveBeenCalledWith(!state.drawerSubreddits);
+    wrapper = mount(MainToolbar, {propsData, store, localVue});
+    let btn = wrapper.find('.v-toolbar__side-icon'); 
+    btn.trigger('click');
+    expect(actions.updateSubredditsDrawer).toHaveBeenCalled();
+    expect(actions.updateSubredditsDrawer.mock.calls[0][1]).toEqual(!state.drawerSubreddits);
   });
 
   it('dispatches updateSettingsDrawer when clicking on settings button', function () {
-    let btn = wrapper.find('v-btn-stub > v-icon-stub');
+    wrapper = mount(MainToolbar, {propsData, store, localVue});
+    let btn = wrapper.findAll('.v-btn').at(1);
     btn.trigger('click');
-    expect(actions.updateSettingsDrawer).toHaveBeenCalledWith(!state.drawerSettings);
+    expect(actions.updateSettingsDrawer).toHaveBeenCalled();
+    expect(actions.updateSettingsDrawer.mock.calls[0][1]).toEqual(!state.drawerSubreddits);
   });
 });
