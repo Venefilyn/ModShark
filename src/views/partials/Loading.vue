@@ -40,7 +40,7 @@ export default {
     }
   },
   mounted() {
-    this.logOutTimeout = setTimeout(this.logOutUser, 1000*60*6); // 6s timeout
+    this.logOutTimeout = setTimeout(this.logOutUser, 6000); // 6s timeout
   },
   methods: {
     redirectUser() {

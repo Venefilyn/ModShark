@@ -70,7 +70,8 @@ describe('Loading.vue', function () {
 
   it('should dispatch logOut after 6 seconds if refreshToken doesn\'t change', function () {
     expect(setTimeout).toHaveBeenCalledTimes(1);
-    jest.runOnlyPendingTimers();
+    expect(actions.logOut).not.toBeCalled();
+    jest.advanceTimersByTime(6000);
     expect(actions.logOut).toBeCalled();
   });
 
