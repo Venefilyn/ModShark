@@ -62,9 +62,8 @@ describe('Loading.vue', function () {
     });
     it('has a ModShark image in the CenteredText component', function () {
       let centeredText = wrapper.find('centered-text-stub');
-      let img = centeredText.find('img');
+      let img = centeredText.find('v-img-stub');
       expect(img.exists()).toBeTruthy();
-      expect(img.attributes().src).toMatch('img/modshark.svg');
     });
   });
 

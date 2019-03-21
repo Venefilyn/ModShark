@@ -1,9 +1,10 @@
 <template>
   <centered-text text="Loading">
-    <v-progress-circular
-      indeterminate
-      color="primary"
-      :size="82"
+    <v-img
+      :src="require('../../assets/logo.svg')"
+      class="my-3"
+      contain
+      height="200"
     />
   </centered-text>
 </template>
