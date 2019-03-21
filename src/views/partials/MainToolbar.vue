@@ -1,7 +1,7 @@
 <template>
   <v-toolbar app>
     <v-toolbar-side-icon
-      v-show="$vuetify.breakpoint.mdAndDown && isAuthenticated"
+      v-show="$vuetify.breakpoint.mdAndDown"
       @click.stop="drawerSubs = !drawerSubs"
     />
     <v-toolbar-title>
@@ -9,7 +9,7 @@
     </v-toolbar-title>
     <v-spacer />
     <v-btn
-      v-show="$vuetify.breakpoint.lgAndDown && isAuthenticated"
+      v-show="$vuetify.breakpoint.lgAndDown"
       flat
       icon
       @click.stop="drawerSett = !drawerSett"
@@ -23,17 +23,10 @@ import {mapActions, mapState, mapGetters} from 'vuex';
 
 export default {
   name: 'MsMainToolbar',
-  props: {
-    isAuthenticated: {
-      type: Boolean,
-      default: true
-    },
-  },
   computed: {
     ...mapState([
       'drawerSubreddits',
       'drawerSettings',
-      'subreddit',
     ]),
     drawerSubs: {
       get() {
