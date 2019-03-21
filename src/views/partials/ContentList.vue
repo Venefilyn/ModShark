@@ -15,28 +15,29 @@ export default {
     ...mapState(['subreddit'])
   },
   watch: {
-    async subreddit(newValue, oldValue) {
+    subreddit(newValue, oldValue) {
       if (newValue !== oldValue) {
-        try {
-          await this.setItems();
-        } catch (e) {
-          this.error = 'Could not get items ' + e.message
-        }
+        this.updateItems();
       }
     }
   },
   async mounted() {
-    try {
-      await this.setItems();
-    } catch (e) {
-      this.error = 'Could not get items ' + e.message
-    }
+    this.updateItems();
   },
   methods: {
     isSubreddit(list) {
       return list instanceof snoowrap.objects.Subreddit
     },
-    async setItems() {}
+    async updateItems() {
+      try {
+        await this.setItems();
+      } catch (e) {
+        this.error = 'Could not get items: ' + e.message
+      }
+    },
+    async setItems() {
+      throw new Error('Not Implemented');
+    }
   },
   render() {
     return {}

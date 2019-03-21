@@ -56,10 +56,12 @@ describe('Loading.vue', function () {
       expect(centeredText.exists()).toBeTruthy();
       expect(centeredText.attributes().text).toEqual('Loading');
     });
+    
     it('should redirect to home if refreshToken changes', function () {
       state.refreshToken = 'new value';
       expect($router.replace).toHaveBeenCalledWith('/');
     });
+    
     it('has a ModShark image in the CenteredText component', function () {
       let centeredText = wrapper.find('centered-text-stub');
       let img = centeredText.find('v-img-stub');
