@@ -54,7 +54,7 @@ describe('Loading.vue', function () {
     it('has a CenteredText component with text "Loading ModShark"', function () {
       let centeredText = wrapper.find('centered-text-stub');
       expect(centeredText.exists()).toBeTruthy();
-      expect(centeredText.attributes().text).toEqual('Loading ModShark');
+      expect(centeredText.attributes().text).toEqual('Loading');
     });
     it('should redirect to home if refreshToken changes', function () {
       state.refreshToken = 'new value';

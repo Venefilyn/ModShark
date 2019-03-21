@@ -1,5 +1,5 @@
 <template>
-  <centered-text text="Loading ModShark">
+  <centered-text text="Loading">
     <v-progress-circular
       indeterminate
       color="primary"
