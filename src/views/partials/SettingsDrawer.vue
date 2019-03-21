@@ -16,9 +16,7 @@
     <v-divider />
 
     <v-list>
-      <v-list-tile
-        @click=""
-      >
+      <v-list-tile to="/settings">
         <v-list-tile-avatar>
           <v-icon>settings</v-icon>
         </v-list-tile-avatar>
@@ -26,9 +24,7 @@
           <v-list-tile-title>Settings</v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
-      <v-list-tile
-        @click=""
-      >
+      <v-list-tile to="/about">
         <v-list-tile-avatar>
           <v-icon>info</v-icon>
         </v-list-tile-avatar>

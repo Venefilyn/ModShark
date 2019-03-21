@@ -24,7 +24,7 @@
             :src="submission.thumbnail"
             :aspect-ratio="1"
             contain
-            @click=""
+            @click="expandImg"
           >
             <v-scale-transition>
               <div
@@ -210,6 +210,9 @@ export default {
       }
       // send notification 
       this.$store.dispatch('addNotification', notification);
+    },
+    expandImg() {
+      //TODO
     }
   },
 }
