@@ -2,6 +2,7 @@
   <v-container>
     <ms-login-server-dialog v-model="serverFaultDialog" />
     <v-snackbar
+      ref="errorSnackbar"
       v-model="authError"
       top
       auto-height
@@ -25,7 +26,10 @@
         />
       </v-flex>
       <v-flex xs12>
-        <v-btn @click="loginPopup">
+        <v-btn
+          ref="loginButton"
+          @click="loginPopup"
+        >
           Login with Reddit
         </v-btn>
       </v-flex>
@@ -72,8 +76,8 @@ export default {
   methods: {
     ...mapActions(['changeStoreLocally']),
     /**
-             * Create a login popup that redirects to a login page
-             */
+     * Create a login popup that redirects to a login page
+     */
     loginPopup() {
       const url = snoowrap.getAuthUrl({
         clientId: this.$store.state.clientId,
@@ -109,11 +113,11 @@ export default {
         this.closedPopupTimeoutID = setTimeout(this.detectClosedPopup, 500);
       }
     },
+
     /**
-             *
-             * @param {MessageEvent} e A message event, checks are ensured we only care of those
-             * with data that is instanceof URLSearchParams
-             */
+     * @param {MessageEvent} e A message event, checks are ensured we only care of those
+     * with data that is instanceof URLSearchParams
+     */
     async updateAuthInfo(e) {
       if (!(e.data instanceof URLSearchParams)) {
         return;

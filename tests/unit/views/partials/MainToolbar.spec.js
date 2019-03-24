@@ -7,7 +7,7 @@ import Vuetify from 'vuetify';
 let localVue = Vue.use(Vuex);
 localVue.use(Vuetify);
 
-describe('MainToolbar', function () {
+describe('MainToolbar.vue', function () {
   let wrapper;
   let actions;
   let store;
@@ -50,7 +50,7 @@ describe('MainToolbar', function () {
       expect(first.is('v-toolbar-side-icon-stub')).toBeTruthy();
     });
 
-    it('should only show v-toolbar-side-icon from mdAndDown', function () {
+    it.skip('should only show v-toolbar-side-icon from mdAndDown', function () {
       let icon = wrapper.find('v-toolbar-side-icon-stub');
       window.innerWidth = 1264;
       window.dispatchEvent(new Event('resize'));
