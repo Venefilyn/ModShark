@@ -16,6 +16,8 @@ describe('MainToolbar.vue', function () {
   let propsData;
 
   beforeEach(function () {
+    jest.useFakeTimers();
+
     propsData = {};
 
     actions = {
@@ -50,14 +52,26 @@ describe('MainToolbar.vue', function () {
       expect(first.is('v-toolbar-side-icon-stub')).toBeTruthy();
     });
 
-    it.skip('should only show v-toolbar-side-icon from mdAndDown', function () {
-      let icon = wrapper.find('v-toolbar-side-icon-stub');
+    it('should only show v-toolbar-side-icon from mdAndDown', function () {
+      wrapper = mount(MainToolbar, {propsData, store, localVue});
+      let icon = wrapper.find({ref: 'subredditsDrawerButton'});
+
+      window.innerWidth = 5;
+      window.dispatchEvent(new Event('resize'));
+      jest.runOnlyPendingTimers();
+      
+      expect(icon.isVisible()).toBeTruthy();
+      
+      window.innerWidth = 1263;
+      window.dispatchEvent(new Event('resize'));
+      jest.runOnlyPendingTimers();
+      
+      expect(icon.isVisible()).toBeTruthy();
+      
       window.innerWidth = 1264;
       window.dispatchEvent(new Event('resize'));
-      expect(icon.isVisible()).toBeTruthy();
-
-      window.innerWidth = 1265;
-      window.dispatchEvent(new Event('resize'));
+      jest.runOnlyPendingTimers();
+      
       expect(icon.isVisible()).toBeFalsy();
     });
 
@@ -69,6 +83,29 @@ describe('MainToolbar.vue', function () {
       let btn = wrapper.find('v-btn-stub > v-icon-stub');
       expect(btn.exists()).toBeTruthy();
       expect(btn.text()).toBe('settings');
+    });
+
+    it('should only show settings button from lgAndDown', function () {
+      wrapper = mount(MainToolbar, {propsData, store, localVue});
+      let icon = wrapper.find({ref: 'settingsDrawerButton'});
+
+      window.innerWidth = 5;
+      window.dispatchEvent(new Event('resize'));
+      jest.runOnlyPendingTimers();
+
+      expect(icon.isVisible()).toBeTruthy();
+
+      window.innerWidth = 1903;
+      window.dispatchEvent(new Event('resize'));
+      jest.runOnlyPendingTimers();
+
+      expect(icon.isVisible()).toBeTruthy();
+
+      window.innerWidth = 1904;
+      window.dispatchEvent(new Event('resize'));
+      jest.runOnlyPendingTimers();
+
+      expect(icon.isVisible()).toBeFalsy();
     });
   });
 

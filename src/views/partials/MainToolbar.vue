@@ -2,6 +2,7 @@
   <v-toolbar app>
     <v-toolbar-side-icon
       v-show="$vuetify.breakpoint.mdAndDown"
+      ref="subredditsDrawerButton"
       @click.stop="drawerSubs = !drawerSubs"
     />
     <v-toolbar-title>
@@ -10,6 +11,7 @@
     <v-spacer />
     <v-btn
       v-show="$vuetify.breakpoint.lgAndDown"
+      ref="settingsDrawerButton"
       flat
       icon
       @click.stop="drawerSett = !drawerSett"
