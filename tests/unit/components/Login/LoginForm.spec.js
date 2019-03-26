@@ -3,7 +3,9 @@ import LoginForm from '@/components/Login/LoginForm';
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify';
+import RedditFactory from '@/models/RedditFactory';
 import * as snoowrap from 'snoowrap';
+jest.mock('@/models/RedditFactory');
 jest.mock('snoowrap');
 
 let localVue = Vue.use(Vuex);
@@ -22,6 +24,8 @@ describe('LoginForm.vue', function () {
   const snoowrapURL = 'http://example.com';
 
   beforeEach(function () {
+    snoowrap.mockClear();
+    RedditFactory.mockClear();
     snoowrap.getAuthUrl.mockReturnValue(snoowrapURL);
 
     openDialogMock = jest.fn();
@@ -38,10 +42,15 @@ describe('LoginForm.vue', function () {
     
     actions = {
       changeStoreLocally: jest.fn(),
+      updateSelectedSubreddit: jest.fn(),
+      updateRefreshToken: jest.fn(),
     };
     state = {
-      storeLocally: jest.fn(),
-      state: 'example_string'
+      storeLocally: jest.fn().mockName('changeStoreLocally'),
+      state: 'example_string',
+      userAgent: 'agent',
+      clientId: 'client_id',
+      redirectUri: 'redirect'
     };
     getters = {};
     store = new Vuex.Store({
@@ -51,7 +60,7 @@ describe('LoginForm.vue', function () {
     });
 
     $router = {
-      replace: jest.fn()
+      push: jest.fn()
     };
     wrapper = shallowMount(LoginForm, {
       store, 
@@ -145,6 +154,12 @@ describe('LoginForm.vue', function () {
     });
   }
 
+  it('should dispatch changeStoreLocally when clicking checkbox', function () {
+    let btn = wrapper.find({ref: 'useLocallyBtn'});
+    btn.vm.$emit('input', false);
+    expect(actions.changeStoreLocally).toHaveBeenCalledTimes(1);
+  });
+
   it('should open an popup when clicking login', function () {
     // Need to properly mount to get click working
     mountWrapper();
@@ -211,42 +226,105 @@ describe('LoginForm.vue', function () {
   });
 
   describe('messageEvent', function () {
-    it('should not do anything if event does not have URLSearchParams', function () {
+    it('only binds updateAuthInfo to MessageEvents', function () {
+      expect(eventMap.hasOwnProperty('message')).toBeTruthy();
+      expect(eventMap.message).toBe(wrapper.vm.updateAuthInfo);
+    });
+  });
+  describe('updateAuthInfo', function () {
+    it('should not do anything if event does not have URLSearchParams', async () => {
       const popupMock = jest.fn();
       wrapper.vm.$data.popup = {
         close: popupMock
       };
-      eventMap.message({data: {}});
+      await wrapper.vm.updateAuthInfo({data: {}});
       expect(clearTimeout).not.toHaveBeenCalled();
       expect(popupMock).not.toHaveBeenCalled();
     });
 
-    it('should clear timeout if event\'s data is instanceof URLSearchParams', function () {
+    it('should clear timeout if event\'s data is instanceof URLSearchParams', async () => {
       expect(clearTimeout).not.toHaveBeenCalled();
       let data = new URLSearchParams();
-      eventMap.message({data});
+      await wrapper.vm.updateAuthInfo({data});
       expect(clearTimeout).toHaveBeenCalled();
     });
 
-    it('should close the popup', function () {
+    it('should close the popup', async () => {
       const popupMock = jest.fn();
       wrapper.vm.$data.popup = {
         close: popupMock
       };
       let data = new URLSearchParams();
       expect(popupMock).not.toHaveBeenCalled();
-      eventMap.message({data});
+      await wrapper.vm.updateAuthInfo({data});
       expect(popupMock).toHaveBeenCalled();
     });
 
-    it('should emit authenticating false and return if returned state and Vuex state variable does not match', function () {
+    it('should emit authenticating false and return if returned state and Vuex state variable does not match', async () => {
       let data = new URLSearchParams({
         state: 'bad string'
       });
-      
-      eventMap.message({data});
+
+      await wrapper.vm.updateAuthInfo({data});
       expect(wrapper.emitted().authenticating).toHaveLength(1);
       expect(wrapper.emitted().authenticating[0]).toEqual([false]);
     });
+
+    it('should call snoowrap.fromAuthCode with code, userAgent, clientId, redirectUrl', async () => {
+      const code = 'returned code';
+      
+      let data = new URLSearchParams({
+        state: state.state,
+        code
+      });
+      await wrapper.vm.updateAuthInfo({data});
+      expect(snoowrap.fromAuthCode).toHaveBeenCalledTimes(1);
+      expect(snoowrap.fromAuthCode.mock.calls[0][0]).toEqual({
+        code: code,
+        userAgent: state.userAgent,
+        clientId: state.clientId,
+        redirectUrl: state.redirectUrl,
+      })
+    });
+
+    it('should set call RedditFactory.setReddit with snoowrap instance', async () => {
+      let getRedditResponse = {
+        getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser)
+      };
+      wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
+      
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      await wrapper.vm.updateAuthInfo({data});
+      expect(RedditFactory.setReddit).toHaveBeenCalledWith(getRedditResponse);
+    });
+
+    it('should dispatch updateSelectedSubreddit with snoowrap instance', async () => {
+      let getRedditResponse = {
+        getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser)
+      };
+      wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      await wrapper.vm.updateAuthInfo({data});
+      expect(actions.updateSelectedSubreddit).toHaveBeenCalledTimes(1);
+      expect(actions.updateSelectedSubreddit.mock.calls[0][1]).toBe(getRedditResponse);
+    });
+    
+    it.skip('throws an Error if getMe does not return snoowrap RedditUser instance', function () {});
+    it.skip('calls updateServerAuth with refresh and access token from getReddit function if storeLocally is false', function () {});
+    it.skip('does not call updateServerAuth if storeLocally is true', function () {});
+    it.skip('emits authenticating with arguments "false" if getReddit resolves', function () {});
+    it.skip('emits authenticating with arguments "false" if getReddit throws an exception', function () {});
+    it.skip('dispatches updateRefreshToken with refresh token if getReddit resolves', function () {});
+    it.skip('does not dispatch updateRefreshToken with refresh token if getReddit throws an exception', function () {});
+    it.skip('redirects to r/mod modqueue if getReddit resolves', function () {});
+    it.skip('does not redirect if getReddit throws an exception', function () {});
+    it.skip('should show a snackbar with an error message if getReddit throws an exception', function () {});
   });
 });

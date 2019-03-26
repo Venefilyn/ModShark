@@ -20,6 +20,7 @@
     <v-layout wrap>
       <v-flex xs12>
         <v-checkbox
+          ref="useLocallyBtn"
           v-model="localUsage"
           class="justify-center"
           label="Use locally"
@@ -159,8 +160,8 @@ export default {
       } catch (e) {
         // Create snackbar about error
         this.$emit('authenticating', false);
-        this.authError = true; 
-        this.authErrorMsg = e.message; 
+        this.authError = true;
+        this.authErrorMsg = e.message;
       }
     },
     async getReddit(code) {
@@ -186,9 +187,7 @@ export default {
         if (this.serverRetries <= 2) {
           this.serverRetries += 1;
           // Retry once a second
-          let promise = new Promise(resolve => setTimeout(resolve, 1000));
-          await promise;
-          await this.updateServerAuth(refreshToken, accessToken)
+          setTimeout(this.updateServerAuth, 1000, [refreshToken, accessToken]);
         }
         else {
           this.serverFaultDialog = true;
