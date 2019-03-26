@@ -19,7 +19,9 @@ describe('ContentList.vue', function () {
     propsData = {};
 
     actions = {};
-    state = {};
+    state = {
+      subreddit: 'value'
+    };
     getters = {};
     store = new Vuex.Store({
       state,
@@ -95,5 +97,11 @@ describe('ContentList.vue', function () {
         await expect(wrapper.vm.setItems()).rejects.toThrow(Error('Not Implemented'));
       });
     });
+  });
+
+  it('calls updateItems() when subreddit changes', function () {
+    wrapper.vm.updateItems = jest.fn();
+    state.subreddit = 'new value';
+    expect(wrapper.vm.updateItems).toHaveBeenCalled()
   });
 });
