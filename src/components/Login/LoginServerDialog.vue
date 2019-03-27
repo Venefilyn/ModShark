@@ -29,10 +29,16 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn @click="$emit('input', false)">
+        <v-btn
+          ref="continueBtn"
+          @click="$emit('input', false)"
+        >
           Continue
         </v-btn>
-        <v-btn @click="this.switch">
+        <v-btn
+          ref="useLocallyBtn"
+          @click="this.switch"
+        >
           Use locally
         </v-btn>
       </v-card-actions>

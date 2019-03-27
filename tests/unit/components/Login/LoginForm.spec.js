@@ -5,8 +5,10 @@ import Vuex from 'vuex'
 import Vuetify from 'vuetify';
 import RedditFactory from '@/models/RedditFactory';
 import * as snoowrap from 'snoowrap';
+import axios from 'axios';
 jest.mock('@/models/RedditFactory');
 jest.mock('snoowrap');
+jest.mock('axios');
 
 let localVue = Vue.use(Vuex);
 localVue.use(Vuetify);
@@ -46,7 +48,7 @@ describe('LoginForm.vue', function () {
       updateRefreshToken: jest.fn(),
     };
     state = {
-      storeLocally: jest.fn().mockName('changeStoreLocally'),
+      storeLocally: false,
       state: 'example_string',
       userAgent: 'agent',
       clientId: 'client_id',
@@ -301,6 +303,20 @@ describe('LoginForm.vue', function () {
       expect(RedditFactory.setReddit).toHaveBeenCalledWith(getRedditResponse);
     });
 
+    it('should not dispatch updateRefreshToken if getMe does not return a RedditUser instance', async () => {
+      let getRedditResponse = {
+        getMe: jest.fn()
+      };
+      wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      await wrapper.vm.updateAuthInfo({data});
+      expect(actions.updateRefreshToken).not.toHaveBeenCalled();
+    });
+
     it('should dispatch updateSelectedSubreddit with snoowrap instance', async () => {
       let getRedditResponse = {
         getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser)
@@ -316,15 +332,185 @@ describe('LoginForm.vue', function () {
       expect(actions.updateSelectedSubreddit.mock.calls[0][1]).toBe(getRedditResponse);
     });
     
-    it.skip('throws an Error if getMe does not return snoowrap RedditUser instance', function () {});
-    it.skip('calls updateServerAuth with refresh and access token from getReddit function if storeLocally is false', function () {});
-    it.skip('does not call updateServerAuth if storeLocally is true', function () {});
-    it.skip('emits authenticating with arguments "false" if getReddit resolves', function () {});
-    it.skip('emits authenticating with arguments "false" if getReddit throws an exception', function () {});
-    it.skip('dispatches updateRefreshToken with refresh token if getReddit resolves', function () {});
-    it.skip('does not dispatch updateRefreshToken with refresh token if getReddit throws an exception', function () {});
-    it.skip('redirects to r/mod modqueue if getReddit resolves', function () {});
-    it.skip('does not redirect if getReddit throws an exception', function () {});
-    it.skip('should show a snackbar with an error message if getReddit throws an exception', function () {});
+    it('sends request to /api/authenticate with refresh and access token from getReddit function if storeLocally is false', async () => {
+      let getRedditResponse = {
+        getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser),
+        refreshToken: 'example refresh token',
+        accessToken: 'example refresh token',
+      };
+      wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      await wrapper.vm.updateAuthInfo({data});
+      expect(axios.post).toHaveBeenCalledWith('/api/authenticate', {
+        'RefreshToken': getRedditResponse.refreshToken,
+        'AccessToken': getRedditResponse.accessToken,
+      }, {
+        'headers': {
+          'content-type': 'application/json;charset=utf-8'
+        }, 
+        'timeout': 5000
+      })
+    });
+
+    it('sends retries twice if request to /api/authenticate fails', async () => {
+      let getRedditResponse = {
+        getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser),
+        refreshToken: 'example refresh token',
+        accessToken: 'example refresh token',
+      };
+      wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      axios.post = axios.post.mockRejectedValue(new Error());
+      await wrapper.vm.updateAuthInfo({data});
+      expect(axios.post).toHaveBeenCalledTimes(1);
+
+      jest.runOnlyPendingTimers();
+      expect(axios.post).toHaveBeenCalledTimes(2);
+
+      jest.runOnlyPendingTimers();
+      expect(axios.post).toHaveBeenCalledTimes(2);
+    });
+
+    it('sets serverFaultDialog to true if server always fails', async () => {
+      let getRedditResponse = {
+        getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser),
+        refreshToken: 'example refresh token',
+        accessToken: 'example refresh token',
+      };
+      wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      axios.post = axios.post.mockRejectedValue(new Error());
+      wrapper.vm.$data.serverRetries = 3;
+      await wrapper.vm.updateAuthInfo({data});
+      expect(wrapper.vm.$data.serverFaultDialog).toBeTruthy();
+    });
+    
+    it('does not call updateServerAuth if storeLocally is true', async () => {
+      let getRedditResponse = {
+        getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser),
+        refreshToken: 'example refresh token',
+        accessToken: 'example refresh token',
+      };
+      wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      state.storeLocally = true;
+      await wrapper.vm.updateAuthInfo({data});
+      expect(axios.post).not.toHaveBeenCalled();
+    });
+
+    it('emits authenticating with arguments "false" if getReddit resolves', async () => {
+      let getRedditResponse = {
+        getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser),
+        refreshToken: 'example refresh token',
+        accessToken: 'example refresh token',
+      };
+      wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      state.storeLocally = true;
+      await wrapper.vm.updateAuthInfo({data});
+      expect(wrapper.emitted().authenticating).toHaveLength(1);
+      expect(wrapper.emitted().authenticating[0]).toEqual([false]);
+    });
+
+    it('emits authenticating with arguments "false" if getReddit throws an exception', async () => {
+      wrapper.vm.getReddit = jest.fn().mockRejectedValue('');
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      await wrapper.vm.updateAuthInfo({data});
+      expect(wrapper.emitted().authenticating).toHaveLength(1);
+      expect(wrapper.emitted().authenticating[0]).toEqual([false]);
+    });
+
+    it('dispatches updateRefreshToken with refresh token if getReddit resolves', async () => {
+      let getRedditResponse = {
+        getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser),
+        refreshToken: 'example refresh token',
+        accessToken: 'example refresh token',
+      };
+      wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      await wrapper.vm.updateAuthInfo({data});
+      expect(actions.updateRefreshToken).toHaveBeenCalled();
+      expect(actions.updateRefreshToken.mock.calls[0][1]).toBe(getRedditResponse.refreshToken);
+    });
+
+    it('does not dispatch updateRefreshToken with refresh token if getReddit throws an exception', async () => {
+      wrapper.vm.getReddit = jest.fn().mockRejectedValue('');
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      await wrapper.vm.updateAuthInfo({data});
+      expect(actions.updateRefreshToken).not.toHaveBeenCalled();
+    });
+
+    it('redirects to r/mod modqueue if getReddit resolves', async () => {
+      let getRedditResponse = {
+        getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser),
+        refreshToken: 'example refresh token',
+        accessToken: 'example refresh token',
+      };
+      wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      await wrapper.vm.updateAuthInfo({data});
+      expect($router.push).toHaveBeenCalledWith({name: 'subreddit_modqueue', params: {subreddit: 'mod'}});
+    });
+
+    it('does not redirect if getReddit throws an exception', async () => {
+      wrapper.vm.getReddit = jest.fn().mockRejectedValue('');
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      await wrapper.vm.updateAuthInfo({data});
+      expect($router.push).not.toHaveBeenCalled();
+    });
+
+    it('should show a snackbar with an error message if getReddit throws an exception', async () => {
+      mountWrapper();
+      wrapper.vm.getReddit = jest.fn().mockRejectedValue({message: 'error message'});
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      await wrapper.vm.updateAuthInfo({data});
+      let snackbar = wrapper.find({ref: 'errorSnackbar'});
+      expect(snackbar.isVisible()).toBeTruthy();
+      expect(snackbar.text()).toContain('Error: error message')
+    });
   });
 });
