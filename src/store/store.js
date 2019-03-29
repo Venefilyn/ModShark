@@ -103,6 +103,9 @@ export default new Vuex.Store({
     updateSelectedSubreddit({ commit }, subreddit) {
       commit('UPDATE_SELECTED_SUBREDDIT', subreddit);
     },
+    updateSelectedSubredditObject({ commit }, r) {
+      commit('UPDATE_SELECTED_SUBREDDIT_OBJECT', r);
+    },
     /**
      * @param commit
      * @returns {Promise<string>}
