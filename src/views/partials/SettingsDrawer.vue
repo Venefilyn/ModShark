@@ -10,7 +10,30 @@
       flat
       extended
     >
-      ModShark icon, username, logout icon button
+      ModShark icon and name here
+      <template v-slot:extension>
+        <v-layout
+          row
+          align-center
+        >
+          <v-avatar>
+            <img
+              :src="me.icon_img"
+              :alt="me.name + '\'s avatar'"
+            >
+          </v-avatar>
+          <v-flex pl-2>
+            {{ me.name }}
+          </v-flex>
+          <v-spacer />
+          <v-btn
+            color="error"
+            outline
+          >
+            Logout
+          </v-btn>
+        </v-layout>
+      </template>
     </v-toolbar>
 
     <v-divider />
@@ -42,7 +65,7 @@ import {mapActions, mapState} from 'vuex';
 export default {
   name: 'MsSettingsDrawer',
   computed: {
-    ...mapState(['drawerSettings']),
+    ...mapState(['drawerSettings', 'me']),
     drawer: {
       get() {
         return this.drawerSettings;
