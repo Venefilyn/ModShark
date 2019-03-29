@@ -7,7 +7,7 @@ Moderating on-the-go has always been a pain. ModShark's goal is to make this eas
 Tooling:
 1. Install the [latest .NET Core SDK](https://dotnet.microsoft.com/download)
 1. Install [NodeJS](https://nodejs.org/en/download/) (LTS preferred)
-1. `dotnet tool install dev-certs`
+1. `dotnet tool install dotnet-dev-certs --global`
 
 Project:
 1. `npm install`
