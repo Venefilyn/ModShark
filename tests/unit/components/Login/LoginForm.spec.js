@@ -6,7 +6,6 @@ import Vuetify from 'vuetify';
 import RedditFactory from '@/models/RedditFactory';
 import * as snoowrap from 'snoowrap';
 import axios from 'axios';
-jest.mock('@/models/RedditFactory');
 jest.mock('snoowrap');
 jest.mock('axios');
 
@@ -27,7 +26,7 @@ describe('LoginForm.vue', function () {
 
   beforeEach(function () {
     snoowrap.mockClear();
-    RedditFactory.mockClear();
+    RedditFactory.setReddit = jest.fn();
     snoowrap.getAuthUrl.mockReturnValue(snoowrapURL);
 
     openDialogMock = jest.fn();
@@ -41,7 +40,7 @@ describe('LoginForm.vue', function () {
     window.addEventListener = jest.fn((event, cb) => {
       eventMap[event] = cb;
     });
-    
+
     actions = {
       changeStoreLocally: jest.fn(),
       updateSelectedSubreddit: jest.fn(),
@@ -65,7 +64,7 @@ describe('LoginForm.vue', function () {
       push: jest.fn()
     };
     wrapper = shallowMount(LoginForm, {
-      store, 
+      store,
       localVue,
       mocks: {
         $router,
@@ -90,7 +89,7 @@ describe('LoginForm.vue', function () {
 
     describe('snackbar', function () {
       let snackbar;
-      
+
       beforeAll(function () {
         snackbar = wrapper.find('v-snackbar-stub');
       });
@@ -132,7 +131,7 @@ describe('LoginForm.vue', function () {
 
     describe('login button', function () {
       let button;
-      
+
       beforeAll(function () {
         button = wrapper.find({ ref: 'loginButton' });
       });
@@ -165,7 +164,7 @@ describe('LoginForm.vue', function () {
   it('should open an popup when clicking login', function () {
     // Need to properly mount to get click working
     mountWrapper();
-    
+
     let button = wrapper.find({ ref: 'loginButton' });
     button.trigger('click');
 
@@ -175,10 +174,10 @@ describe('LoginForm.vue', function () {
   it('should emit authenticating as true when clicking login', function () {
     // Need to properly mount to get click working
     mountWrapper();
-    
+
     let button = wrapper.find({ ref: 'loginButton' });
     button.trigger('click');
-    
+
     expect(wrapper.emitted().authenticating).toBeTruthy();
     expect(wrapper.emitted().authenticating[0]).toBeTruthy();
   });
@@ -186,15 +185,15 @@ describe('LoginForm.vue', function () {
   it('should check popup every 500ms and emit authenticating as false when it is closed', function () {
     // Need to properly mount to get click working
     mountWrapper();
-    
+
     let button = wrapper.find({ ref: 'loginButton' });
     openDialogReturnMock.closed = false;
     button.trigger('click');
-    
+
     expect(wrapper.emitted().authenticating).toBeTruthy();
     jest.advanceTimersByTime(500);
     expect(wrapper.emitted().authenticating).toHaveLength(1);
-    
+
     openDialogReturnMock.closed = true;
     jest.advanceTimersByTime(500);
     expect(wrapper.emitted().authenticating).toHaveLength(2);
@@ -220,10 +219,10 @@ describe('LoginForm.vue', function () {
     mountWrapper();
     wrapper.vm.$data.authError = true;
     expect(wrapper.find({ ref: 'errorSnackbar' }).props().value).toBeTruthy();
-    
+
     let button = wrapper.find({ ref: 'loginButton' });
     button.trigger('click');
-    
+
     expect(wrapper.find({ ref: 'errorSnackbar' }).props().value).toBeFalsy();
   });
 
@@ -274,7 +273,7 @@ describe('LoginForm.vue', function () {
 
     it('should call snoowrap.fromAuthCode with code, userAgent, clientId, redirectUrl', async () => {
       const code = 'returned code';
-      
+
       let data = new URLSearchParams({
         state: state.state,
         code
@@ -294,7 +293,7 @@ describe('LoginForm.vue', function () {
         getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser)
       };
       wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
-      
+
       let data = new URLSearchParams({
         state: state.state,
         code: 'returned code'
@@ -331,7 +330,7 @@ describe('LoginForm.vue', function () {
       expect(actions.updateSelectedSubreddit).toHaveBeenCalledTimes(1);
       expect(actions.updateSelectedSubreddit.mock.calls[0][1]).toBe(getRedditResponse);
     });
-    
+
     it('sends request to /api/authenticate with refresh and access token from getReddit function if storeLocally is false', async () => {
       let getRedditResponse = {
         getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser),
@@ -351,7 +350,7 @@ describe('LoginForm.vue', function () {
       }, {
         'headers': {
           'content-type': 'application/json;charset=utf-8'
-        }, 
+        },
         'timeout': 5000
       })
     });
@@ -396,7 +395,7 @@ describe('LoginForm.vue', function () {
       await wrapper.vm.updateAuthInfo({data});
       expect(wrapper.vm.$data.serverFaultDialog).toBeTruthy();
     });
-    
+
     it('does not call updateServerAuth if storeLocally is true', async () => {
       let getRedditResponse = {
         getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser),
