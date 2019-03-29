@@ -143,6 +143,7 @@ export default {
         RedditFactory.setReddit(r);
         let me = await r.getMe();
         this.$store.dispatch('updateSelectedSubredditObject', r);
+        this.$store.dispatch('updateMe', me);
 
         if (!(me instanceof snoowrap.objects.RedditUser)) {
           // noinspection ExceptionCaughtLocallyJS

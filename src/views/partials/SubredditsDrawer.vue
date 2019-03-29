@@ -8,7 +8,23 @@
       flat
       extended
     >
-      Subreddits; Username and avatar
+      <v-layout
+        row
+        align-center
+      >
+        <v-avatar>
+          <img
+            :src="me.icon_img"
+            alt="avatar"
+          >
+        </v-avatar>
+        <v-flex px-2>
+          {{ me.name }}
+        </v-flex>
+      </v-layout>
+      <template v-slot:extension>
+        <v-toolbar-title class="white--text">Subreddits</v-toolbar-title>
+      </template>
     </v-toolbar>
 
     <v-divider />
@@ -54,7 +70,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['drawerSubreddits', 'authenticated']),
+    ...mapState(['drawerSubreddits', 'authenticated', 'me']),
     drawer: {
       get() {
         return this.drawerSubreddits;

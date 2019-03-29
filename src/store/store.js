@@ -26,6 +26,7 @@ export default new Vuex.Store({
     storeLocally: false,
     subreddit: 'mod',
     notifications: [],
+    me: null,
   },
   mutations: {
     UPDATE_REFRESH_TOKEN(state, token) {
@@ -64,6 +65,9 @@ export default new Vuex.Store({
     },
     REMOVE_NOTIFICATION(state, index) {
       state.notifications.splice(index, 1);
+    },
+    UPDATE_ME(state, me) {
+      state.me = me;
     }
   },
   actions: {
@@ -106,6 +110,9 @@ export default new Vuex.Store({
     updateSelectedSubredditObject({ commit }, r) {
       commit('UPDATE_SELECTED_SUBREDDIT_OBJECT', r);
     },
+    updateMe({commit}, me) {
+      commit('UPDATE_ME', me);
+    },
     /**
      * @param commit
      * @returns {Promise<string>}
@@ -124,6 +131,7 @@ export default new Vuex.Store({
         RedditFactory.setReddit(r);
         let me = await r.getMe();
         commit('UPDATE_SELECTED_SUBREDDIT_OBJECT', r);
+        commit('UPDATE_ME', me);
 
         if (!(me instanceof snoowrap.objects.RedditUser)) {
           throw new Error('Could not get Reddit user, aborting.')
