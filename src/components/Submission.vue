@@ -8,6 +8,7 @@
         sm2
         lg1
         style="cursor: pointer;"
+        @click="viewPost"
       >
         <div
           v-if="submission.thumbnail ==='self'"
@@ -24,13 +25,12 @@
             :src="submission.thumbnail"
             :aspect-ratio="1"
             contain
-            @click="expandImg"
           >
             <v-scale-transition>
               <div
                 v-if="hover"
                 class="d-flex"
-                style="height: 100%; "
+                style="height: 100%;"
               >
                 <v-icon x-large>
                   photo_size_select_large
@@ -40,6 +40,10 @@
           </v-img>
         </v-hover>
       </v-flex>
+      <v-divider
+        light
+        vertical
+      />
       <v-flex
         xs9
         sm10
@@ -55,6 +59,7 @@
                   align-start
                   justify-start
                   row
+                  wrap
                   fill-height
                 >
                   <div>
@@ -64,12 +69,12 @@
                     {{ submission.score }}
                   </div>
                   <div class="mx-1" />
-                  <div>
+                  <router-link :to="{name: 'user', params: {username: submission.author.name}}">
                     <v-icon small>
                       person
                     </v-icon>
                     u/{{ submission.author.name }}
-                  </div>
+                  </router-link>
                   <div class="mx-1" />
                   <div>
                     <v-icon small>
@@ -104,11 +109,13 @@
     </v-layout>
     <v-divider light />
     <!--Moderation buttons-->
-    <!--Todo: Move to ContentModerationButtons component, show/hide actions depending on type -->
+    <!--Todo: Should we move to ContentModerationButtons component which shows/hides actions depending on type? -->
+    <!--Todo: Change to v-for, allows to show which action has been taken more easily and change depending on window size-->
     <v-layout
       align-start
       justify-start
       row
+      wrap
       fill-height
       pa-1
     >
@@ -143,16 +150,6 @@
       </v-btn>
       <v-btn
         outline
-        color="warning"
-        @click="showReports = true"
-      >
-        <v-icon left>
-          warning
-        </v-icon>
-        <div>Reports</div>
-      </v-btn>
-      <v-btn
-        outline
         color="info"
         @click="submissionAction(() => submission.lock(), 'Post has been locked!', 'There was an error locking the post.')"
       >
@@ -168,6 +165,39 @@
         <div>More</div>
       </v-btn>
     </v-layout>
+
+    <v-sheet
+      v-if="submission.num_reports"
+      color="yellow accent-4 black--text"
+      tile
+    >
+      <v-layout
+        align-start
+        column
+        justify-start
+        pa-1
+      >
+        <v-flex xs12>
+          <div class="subheading">
+            Reports
+          </div>
+        </v-flex>
+        <v-flex
+          v-for="(report, i) in submission.mod_reports"
+          :key="i"
+          xs12
+        >
+          {{ report[1] + " - " + report[0] }}
+        </v-flex>
+        <v-flex
+          v-for="(report, i) in submission.user_reports"
+          :key="i"
+          xs12
+        >
+          {{ report[1] + " - " + report[0] }}
+        </v-flex>
+      </v-layout>
+    </v-sheet>
   </v-card>
 </template>
 
@@ -186,19 +216,13 @@ export default {
       }
     }
   },
-  data() {
-    return {
-      // TODO: change this to mixin popup
-      showReports: false
-    }
-  },
   methods: {
     /**
-             * TODO: Move to mixin as it's dupe in comment and submission
-             * @param {function} closure
-             * @param {string} successMessage
-             * @param {string} errorMessage
-             */
+     * TODO: Move to mixin as it's dupe in comment and submission
+     * @param {function} closure
+     * @param {string} successMessage
+     * @param {string} errorMessage
+     */
     async submissionAction(closure, successMessage, errorMessage) {
       /** @member {MsNotification} */
       let notification;
@@ -211,8 +235,7 @@ export default {
       // send notification 
       this.$store.dispatch('addNotification', notification);
     },
-    expandImg() {
-      //TODO
+    viewPost() {
     }
   },
 }

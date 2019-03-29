@@ -1,7 +1,10 @@
 <template>
   <div>
-    <ms-content-list-queue :listing="listing" />
+    <ms-content-list-queue v-if="hasFetched" :listing="listing" />
     {{ error }}
+    <div v-if="hasFetched && !listing.length">
+      No items found!
+    </div>
   </div>
 </template>
 

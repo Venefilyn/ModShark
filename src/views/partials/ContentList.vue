@@ -8,7 +8,8 @@ export default {
     return {
       /** @member {Array<snoowrap.objects.ReplyableContent>} */
       listing: [],
-      error: ''
+      error: '',
+      hasFetched: false,
     }
   },
   computed: {
@@ -22,7 +23,7 @@ export default {
     }
   },
   async mounted() {
-    this.updateItems();
+    await this.updateItems();
   },
   methods: {
     isSubreddit(list) {
@@ -31,6 +32,7 @@ export default {
     async updateItems() {
       try {
         await this.setItems();
+        this.hasFetched = true;
       } catch (e) {
         this.error = 'Could not get items: ' + e.message
       }
