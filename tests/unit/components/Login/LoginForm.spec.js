@@ -43,8 +43,9 @@ describe('LoginForm.vue', function () {
 
     actions = {
       changeStoreLocally: jest.fn(),
-      updateSelectedSubreddit: jest.fn(),
+      updateSelectedSubredditObject: jest.fn(),
       updateRefreshToken: jest.fn(),
+      updateMe: jest.fn(),
     };
     state = {
       storeLocally: false,
@@ -327,8 +328,23 @@ describe('LoginForm.vue', function () {
         code: 'returned code'
       });
       await wrapper.vm.updateAuthInfo({data});
-      expect(actions.updateSelectedSubreddit).toHaveBeenCalledTimes(1);
-      expect(actions.updateSelectedSubreddit.mock.calls[0][1]).toBe(getRedditResponse);
+      expect(actions.updateSelectedSubredditObject).toHaveBeenCalledTimes(1);
+      expect(actions.updateSelectedSubredditObject.mock.calls[0][1]).toBe(getRedditResponse);
+    });
+
+    it('should dispatch updateMe with RedditUser instance', async () => {
+      let getRedditResponse = {
+        getMe: jest.fn().mockReturnValue(new snoowrap.objects.RedditUser)
+      };
+      wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
+
+      let data = new URLSearchParams({
+        state: state.state,
+        code: 'returned code'
+      });
+      await wrapper.vm.updateAuthInfo({data});
+      expect(actions.updateMe).toHaveBeenCalledTimes(1);
+      expect(actions.updateMe.mock.calls[0][1]).toBe(getRedditResponse.getMe());
     });
 
     it('sends request to /api/authenticate with refresh and access token from getReddit function if storeLocally is false', async () => {
