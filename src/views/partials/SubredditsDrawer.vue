@@ -17,7 +17,9 @@
         @click="changeSubreddit('mod')"
       >
         <v-list-tile-content>
-          <v-list-tile-title>r/mod</v-list-tile-title>
+          <v-list-tile-title>
+            r/mod
+          </v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
       <v-divider />
@@ -27,7 +29,15 @@
         @click="changeSubreddit(subreddit.display_name)"
       >
         <v-list-tile-content>
-          <v-list-tile-title>r/{{ subreddit.display_name }}</v-list-tile-title>
+          <v-list-tile-title>
+            <v-avatar size="24">
+              <img v-if="subreddit.icon_img"
+                  :src="subreddit.icon_img"
+                  :alt="subreddit.display_name + '\'s icon'"
+              >
+            </v-avatar>
+            {{ subreddit.display_name }}
+          </v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
     </v-list>
