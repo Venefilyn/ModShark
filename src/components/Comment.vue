@@ -51,6 +51,7 @@
               <div v-html="$sanitize(comment.body_html)"></div>
             </v-flex>
           </v-card-title>
+          <v-divider light></v-divider>
           <!--Moderation buttons-->
           <!--Todo: Should we move to ContentModerationButtons component which shows/hides actions depending on type? -->
           <!--Todo: Change to v-for, allows to show which action has been taken more easily and change depending on window size-->
@@ -96,6 +97,38 @@
         </v-card>
       </v-flex>
     </v-layout>
+    <v-sheet
+        v-if="comment.num_reports"
+        color="yellow accent-4 black--text"
+        tile
+    >
+      <v-layout
+          align-start
+          column
+          justify-start
+          pa-1
+      >
+        <v-flex xs12>
+          <div class="subheading">
+            Reports
+          </div>
+        </v-flex>
+        <v-flex
+            v-for="(report, i) in comment.mod_reports"
+            :key="i"
+            xs12
+        >
+          {{ report[1] + " - " + report[0] }}
+        </v-flex>
+        <v-flex
+            v-for="(report, i) in comment.user_reports"
+            :key="i"
+            xs12
+        >
+          {{ report[1] + " - " + report[0] }}
+        </v-flex>
+      </v-layout>
+    </v-sheet>
   </v-card>
 </template>
 
