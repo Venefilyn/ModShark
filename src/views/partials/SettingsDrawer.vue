@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <v-navigation-drawer
     v-model="drawer"
     fixed
@@ -6,11 +6,51 @@
     :mobile-break-point="this.$vuetify.breakpoint.thresholds.lg"
     right
   >
+    <v-dialog
+      v-model="showLogoutConfirmation"
+      persistent
+      max-width="290"
+    >
+      <v-card>
+        <v-card-text>
+          Do you wish to logout?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="red darken-1"
+            flat
+            @click="logOut"
+          >
+            Yes
+          </v-btn>
+          <v-btn
+            flat
+            @click="showLogoutConfirmation = false"
+          >
+            No
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-toolbar
       flat
       extended
     >
-      ModShark icon and name here
+      <v-layout
+        row
+        align-center
+      >
+        <v-avatar tile>
+          <img
+            :src="require('../../assets/logo.svg')"
+            alt="ModShark icon"
+          >
+        </v-avatar>
+        <v-flex pl-2 class="subheading">
+          <v-toolbar-title class="white--text">ModShark</v-toolbar-title>
+        </v-flex>
+      </v-layout>
       <template v-slot:extension>
         <v-layout
           row
@@ -28,7 +68,8 @@
           <v-spacer />
           <v-btn
             color="error"
-            outline
+            flat
+            @click="showLogoutConfirmation = true"
           >
             Logout
           </v-btn>
@@ -64,6 +105,11 @@ import {mapActions, mapState} from 'vuex';
 
 export default {
   name: 'MsSettingsDrawer',
+  data() {
+    return {
+      showLogoutConfirmation: false
+    }
+  },
   computed: {
     ...mapState(['drawerSettings', 'me']),
     drawer: {
@@ -76,7 +122,12 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['updateSettingsDrawer'])
+    ...mapActions(['updateSettingsDrawer']),
+    logOut() {
+      this.showLogoutConfirmation = false;
+      this.$store.dispatch('logOut');
+      this.$router.push({ name: 'home' })
+    }
   },
 }
 </script>
