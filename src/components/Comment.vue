@@ -10,9 +10,6 @@
         <v-card flat>
           <v-card-title primary-title>
             <div>
-              <vue-simple-markdown :source="comment.body" />
-            </div>
-            <div>
               <v-layout
                 align-start
                 justify-start
@@ -27,7 +24,7 @@
                   </v-icon>
                   {{ comment.score }}
                 </div>
-                <div class="mx-1" />
+                <div class="mx-1"></div>
                 <div>
                   <v-icon small>
                     person
@@ -50,6 +47,9 @@
                 </div>
               </v-layout>
             </div>
+            <v-flex xs12>
+              <div v-html="$sanitize(comment.body_html)"></div>
+            </v-flex>
           </v-card-title>
           <!--Moderation buttons-->
           <!--Todo: Should we move to ContentModerationButtons component which shows/hides actions depending on type? -->

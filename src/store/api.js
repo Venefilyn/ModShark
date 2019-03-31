@@ -5,6 +5,10 @@ const instance = axios.create({
   withCredentials: true
 });
 
+export async function logOut() {
+  return await instance.delete('authenticate');
+}
+
 export async function getToken() {
   let payload = await instance.get('authenticate');
   return payload.data['token'];

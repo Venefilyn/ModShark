@@ -25,21 +25,18 @@ namespace ModShark.Controllers.Api
         }
 
         // GET api/authenticate
-        [HttpGet, Authorize]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Dictionary<string, string>>>> Get()
         {
             // Return token if it exists, otherwise sign out and return unauthorized
-            try
+            Claim token = User.Claims.ToList().Find(n => n.Type == "token");
+            // token exists, return it
+            if (token != null)
             {
-                Claim token = User.Claims.ToList().Find(n => n.Type == "token");
-                // token exists, return it
                 return Ok(new Dictionary<string, string> {{"token", token.Value}});
             }
-            catch (ArgumentNullException)
-            {
-                // Match is null, remove logged in
-                await HttpContext.SignOutAsync();
-            }
+            // Match is null, remove logged in
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Unauthorized();
         }
 
@@ -80,6 +77,14 @@ namespace ModShark.Controllers.Api
             // if successful, store hashed token and hashed username in tables
             // call AuthenticateUser(username, token)
             await AuthenticateUser(user.Id, tokenGroup.RefreshToken);
+            return NoContent();
+        }
+
+        // DELETE api/authenticate
+        [HttpDelete]
+        public async Task<ActionResult<string>> Post()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return NoContent();
         }
 

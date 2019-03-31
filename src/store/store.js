@@ -97,12 +97,19 @@ export default new Vuex.Store({
       }
       commit('ADD_NOTIFICATION', notification)
     },
-    logOut({ commit }) {
+    logOut({ commit, state }) {
       commit('UPDATE_REFRESH_TOKEN', '');
       commit('UPDATE_LOCAL_TOKEN');
-      commit('UPDATE_STORE_LOCALLY', false);
       commit('CHANGE_SETTINGS', {});
       commit('UPDATE_AUTHENTICATED', false);
+      if (!state.storeLocally) {
+        api.logOut().then(() => {
+          commit('ADD_NOTIFICATION', new MsNotification('Successfully logged out'))
+        }).catch(() => {
+          commit('ADD_NOTIFICATION', new MsNotification('There was an error logging out', 'error'))
+        });
+      }
+      commit('UPDATE_STORE_LOCALLY', false);
     },
     updateSelectedSubreddit({ commit }, subreddit) {
       commit('UPDATE_SELECTED_SUBREDDIT', subreddit);

@@ -5,11 +5,11 @@ import router from './router'
 import store from './store/store'
 import './registerServiceWorker'
 import moment from 'moment';
-import VueSimpleMarkdown from 'vue-simple-markdown'
+import sanitizeHTML from 'sanitize-html';
 
+Vue.prototype.$sanitize = sanitizeHTML;
 Vue.config.productionTip = false;
 
-Vue.use(VueSimpleMarkdown);
 Vue.prototype.moment = moment;
 
 new Vue({
