@@ -26,6 +26,7 @@
         :to="{ name: 'modmail', params: { subreddits: getSubredditName }}"
         value="modmail"
         flat
+        :disabled="!hasModmail"
       >
         <span>Modmail</span>
         <v-icon>mail</v-icon>
@@ -139,6 +140,14 @@ export default {
       }
     },
     ...mapGetters(['getSubredditName'])
+  },
+  methods: {
+    hasModmail() {
+      if (this.subreddit.display_name === 'mod') {
+        return true
+      }
+      return this.subreddit.is_enrolled_in_new_modmail
+    }
   },
 }
 </script>
