@@ -53,7 +53,7 @@ export default {
     MsSettingsDrawer,
   },
   computed: {
-    ...mapState(['refreshToken', 'storeLocally', 'localRefreshToken', 'notifications']),
+    ...mapState(['refreshToken', 'storeLocally', 'localRefreshToken', 'notifications', 'authenticated']),
     isAuthenticated() {
       return this.refreshToken.length > 0;
     }
@@ -68,7 +68,7 @@ export default {
         this.changeStoreLocally(false)
       }
     }
-    else {
+    else if (this.authenticated) {
       // try authenticating from server
       try {
         await this.$store.dispatch('authenticateFromServer');
