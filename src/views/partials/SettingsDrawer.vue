@@ -47,7 +47,7 @@
             alt="ModShark icon"
           >
         </v-avatar>
-        <v-flex pl-2 class="subheading">
+        <v-flex pl-2>
           <v-toolbar-title class="white--text">ModShark</v-toolbar-title>
         </v-flex>
       </v-layout>

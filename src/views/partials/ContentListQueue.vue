@@ -11,6 +11,7 @@
         my3
       >
         <v-container
+          fluid
           pa-0
           pb-2
           ma-0
