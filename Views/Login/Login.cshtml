@@ -6,7 +6,7 @@
     <script>
         var url = new URL(window.location);
         if (window.opener) {
-            window.opener.postMessage(url.searchParams);
+            window.opener.postMessage({target: 'login', url: url.href}, url.origin);
         } else {
             window.location.href = "/";
         }

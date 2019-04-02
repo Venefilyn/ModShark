@@ -120,13 +120,12 @@ export default {
      * with data that is instanceof URLSearchParams
      */
     async updateAuthInfo(e) {
-      if (!(e.data instanceof URLSearchParams)) {
+      if (e.origin !== window.origin || e.data['target'] !== 'login') {
         return;
       }
       clearTimeout(this.closedPopupTimeoutID);
-                
-      /** @member {URLSearchParams} params **/
-      let params = e.data;
+
+      let params = new URL(e.data.url).searchParams;
 
       if (this.popup) {
         this.popup.close();
