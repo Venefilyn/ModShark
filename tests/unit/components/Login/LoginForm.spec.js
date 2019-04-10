@@ -6,6 +6,7 @@ import Vuetify from 'vuetify';
 import RedditFactory from '@/models/RedditFactory';
 import * as snoowrap from 'snoowrap';
 import axios from 'axios';
+
 jest.mock('snoowrap');
 jest.mock('axios');
 
@@ -134,7 +135,7 @@ describe('LoginForm.vue', function () {
       let button;
 
       beforeAll(function () {
-        button = wrapper.find({ ref: 'loginButton' });
+        button = wrapper.find({ref: 'loginButton'});
       });
 
       it('should have text "Login with Reddit"', function () {
@@ -166,7 +167,7 @@ describe('LoginForm.vue', function () {
     // Need to properly mount to get click working
     mountWrapper();
 
-    let button = wrapper.find({ ref: 'loginButton' });
+    let button = wrapper.find({ref: 'loginButton'});
     button.trigger('click');
 
     expect(openDialogMock).toHaveBeenCalledWith(snoowrapURL, 'mywindow', expect.anything());
@@ -176,7 +177,7 @@ describe('LoginForm.vue', function () {
     // Need to properly mount to get click working
     mountWrapper();
 
-    let button = wrapper.find({ ref: 'loginButton' });
+    let button = wrapper.find({ref: 'loginButton'});
     button.trigger('click');
 
     expect(wrapper.emitted().authenticating).toBeTruthy();
@@ -187,7 +188,7 @@ describe('LoginForm.vue', function () {
     // Need to properly mount to get click working
     mountWrapper();
 
-    let button = wrapper.find({ ref: 'loginButton' });
+    let button = wrapper.find({ref: 'loginButton'});
     openDialogReturnMock.closed = false;
     button.trigger('click');
 
@@ -208,7 +209,7 @@ describe('LoginForm.vue', function () {
     openDialogMock.mockReturnValue(false);
     openDialogReturnMock.closed = true;
 
-    let button = wrapper.find({ ref: 'loginButton' });
+    let button = wrapper.find({ref: 'loginButton'});
     button.trigger('click');
     jest.advanceTimersByTime(500);
     expect(wrapper.emitted().authenticating).toHaveLength(1);
@@ -219,12 +220,12 @@ describe('LoginForm.vue', function () {
   it('hides snackbar when clicking login button', function () {
     mountWrapper();
     wrapper.vm.$data.authError = true;
-    expect(wrapper.find({ ref: 'errorSnackbar' }).props().value).toBeTruthy();
+    expect(wrapper.find({ref: 'errorSnackbar'}).props().value).toBeTruthy();
 
-    let button = wrapper.find({ ref: 'loginButton' });
+    let button = wrapper.find({ref: 'loginButton'});
     button.trigger('click');
 
-    expect(wrapper.find({ ref: 'errorSnackbar' }).props().value).toBeFalsy();
+    expect(wrapper.find({ref: 'errorSnackbar'}).props().value).toBeFalsy();
   });
 
   describe('messageEvent', function () {
@@ -233,8 +234,21 @@ describe('LoginForm.vue', function () {
       expect(eventMap.message).toBe(wrapper.vm.updateAuthInfo);
     });
   });
+
+  function getEventData(state, code = 'returned code') {
+    const url = new URL(`${window.location}?state=${state}&code=${code}`);
+    const data = {
+      origin: window.origin,
+      data: {
+        target: 'login',
+        url: url.href
+      }
+    };
+    return data;
+  }
+
   describe('updateAuthInfo', function () {
-    it('should not do anything if event does not have URLSearchParams', async () => {
+    it('should not do anything if event is not login', async () => {
       const popupMock = jest.fn();
       wrapper.vm.$data.popup = {
         close: popupMock
@@ -244,10 +258,10 @@ describe('LoginForm.vue', function () {
       expect(popupMock).not.toHaveBeenCalled();
     });
 
-    it('should clear timeout if event\'s data is instanceof URLSearchParams', async () => {
+    it('should clear timeout if event\'s origin is the same and target is login', async () => {
       expect(clearTimeout).not.toHaveBeenCalled();
-      let data = new URLSearchParams();
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state);
+      await wrapper.vm.updateAuthInfo(data);
       expect(clearTimeout).toHaveBeenCalled();
     });
 
@@ -256,18 +270,16 @@ describe('LoginForm.vue', function () {
       wrapper.vm.$data.popup = {
         close: popupMock
       };
-      let data = new URLSearchParams();
+      const data = getEventData(state.state);
       expect(popupMock).not.toHaveBeenCalled();
-      await wrapper.vm.updateAuthInfo({data});
+      await wrapper.vm.updateAuthInfo(data);
       expect(popupMock).toHaveBeenCalled();
     });
 
     it('should emit authenticating false and return if returned state and Vuex state variable does not match', async () => {
-      let data = new URLSearchParams({
-        state: 'bad string'
-      });
+      const data = getEventData('bad string');
 
-      await wrapper.vm.updateAuthInfo({data});
+      await wrapper.vm.updateAuthInfo(data);
       expect(wrapper.emitted().authenticating).toHaveLength(1);
       expect(wrapper.emitted().authenticating[0]).toEqual([false]);
     });
@@ -275,11 +287,9 @@ describe('LoginForm.vue', function () {
     it('should call snoowrap.fromAuthCode with code, userAgent, clientId, redirectUrl', async () => {
       const code = 'returned code';
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code
-      });
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state, code);
+      
+      await wrapper.vm.updateAuthInfo(data);
       expect(snoowrap.fromAuthCode).toHaveBeenCalledTimes(1);
       expect(snoowrap.fromAuthCode.mock.calls[0][0]).toEqual({
         code: code,
@@ -295,11 +305,8 @@ describe('LoginForm.vue', function () {
       };
       wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state);
+      await wrapper.vm.updateAuthInfo(data);
       expect(RedditFactory.setReddit).toHaveBeenCalledWith(getRedditResponse);
     });
 
@@ -309,11 +316,8 @@ describe('LoginForm.vue', function () {
       };
       wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state);
+      await wrapper.vm.updateAuthInfo(data);
       expect(actions.updateRefreshToken).not.toHaveBeenCalled();
     });
 
@@ -323,11 +327,8 @@ describe('LoginForm.vue', function () {
       };
       wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state);
+      await wrapper.vm.updateAuthInfo(data);
       expect(actions.updateSelectedSubredditObject).toHaveBeenCalledTimes(1);
       expect(actions.updateSelectedSubredditObject.mock.calls[0][1]).toBe(getRedditResponse);
     });
@@ -338,11 +339,8 @@ describe('LoginForm.vue', function () {
       };
       wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state);
+      await wrapper.vm.updateAuthInfo(data);
       expect(actions.updateMe).toHaveBeenCalledTimes(1);
       expect(actions.updateMe.mock.calls[0][1]).toBe(getRedditResponse.getMe());
     });
@@ -355,11 +353,8 @@ describe('LoginForm.vue', function () {
       };
       wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state);
+      await wrapper.vm.updateAuthInfo(data);
       expect(axios.post).toHaveBeenCalledWith('/api/authenticate', {
         'RefreshToken': getRedditResponse.refreshToken,
         'AccessToken': getRedditResponse.accessToken,
@@ -379,12 +374,9 @@ describe('LoginForm.vue', function () {
       };
       wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
+      const data = getEventData(state.state);
       axios.post = axios.post.mockRejectedValue(new Error());
-      await wrapper.vm.updateAuthInfo({data});
+      await wrapper.vm.updateAuthInfo(data);
       expect(axios.post).toHaveBeenCalledTimes(1);
 
       jest.runOnlyPendingTimers();
@@ -402,13 +394,10 @@ describe('LoginForm.vue', function () {
       };
       wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
+      const data = getEventData(state.state);
       axios.post = axios.post.mockRejectedValue(new Error());
       wrapper.vm.$data.serverRetries = 3;
-      await wrapper.vm.updateAuthInfo({data});
+      await wrapper.vm.updateAuthInfo(data);
       expect(wrapper.vm.$data.serverFaultDialog).toBeTruthy();
     });
 
@@ -420,12 +409,9 @@ describe('LoginForm.vue', function () {
       };
       wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
+      const data = getEventData(state.state);
       state.storeLocally = true;
-      await wrapper.vm.updateAuthInfo({data});
+      await wrapper.vm.updateAuthInfo(data);
       expect(axios.post).not.toHaveBeenCalled();
     });
 
@@ -437,12 +423,9 @@ describe('LoginForm.vue', function () {
       };
       wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
+      const data = getEventData(state.state);
       state.storeLocally = true;
-      await wrapper.vm.updateAuthInfo({data});
+      await wrapper.vm.updateAuthInfo(data);
       expect(wrapper.emitted().authenticating).toHaveLength(1);
       expect(wrapper.emitted().authenticating[0]).toEqual([false]);
     });
@@ -450,11 +433,8 @@ describe('LoginForm.vue', function () {
     it('emits authenticating with arguments "false" if getReddit throws an exception', async () => {
       wrapper.vm.getReddit = jest.fn().mockRejectedValue('');
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state);
+      await wrapper.vm.updateAuthInfo(data);
       expect(wrapper.emitted().authenticating).toHaveLength(1);
       expect(wrapper.emitted().authenticating[0]).toEqual([false]);
     });
@@ -467,11 +447,8 @@ describe('LoginForm.vue', function () {
       };
       wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state);
+      await wrapper.vm.updateAuthInfo(data);
       expect(actions.updateRefreshToken).toHaveBeenCalled();
       expect(actions.updateRefreshToken.mock.calls[0][1]).toBe(getRedditResponse.refreshToken);
     });
@@ -479,11 +456,8 @@ describe('LoginForm.vue', function () {
     it('does not dispatch updateRefreshToken with refresh token if getReddit throws an exception', async () => {
       wrapper.vm.getReddit = jest.fn().mockRejectedValue('');
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state);
+      await wrapper.vm.updateAuthInfo(data);
       expect(actions.updateRefreshToken).not.toHaveBeenCalled();
     });
 
@@ -495,22 +469,16 @@ describe('LoginForm.vue', function () {
       };
       wrapper.vm.getReddit = jest.fn().mockReturnValue(getRedditResponse);
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state);
+      await wrapper.vm.updateAuthInfo(data);
       expect($router.push).toHaveBeenCalledWith({name: 'subreddit_modqueue', params: {subreddit: 'mod'}});
     });
 
     it('does not redirect if getReddit throws an exception', async () => {
       wrapper.vm.getReddit = jest.fn().mockRejectedValue('');
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state);
+      await wrapper.vm.updateAuthInfo(data);
       expect($router.push).not.toHaveBeenCalled();
     });
 
@@ -518,11 +486,8 @@ describe('LoginForm.vue', function () {
       mountWrapper();
       wrapper.vm.getReddit = jest.fn().mockRejectedValue({message: 'error message'});
 
-      let data = new URLSearchParams({
-        state: state.state,
-        code: 'returned code'
-      });
-      await wrapper.vm.updateAuthInfo({data});
+      const data = getEventData(state.state);
+      await wrapper.vm.updateAuthInfo(data);
       let snackbar = wrapper.find({ref: 'errorSnackbar'});
       expect(snackbar.isVisible()).toBeTruthy();
       expect(snackbar.text()).toContain('Error: error message')
